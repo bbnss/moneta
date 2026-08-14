@@ -31,7 +31,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Card or bureau markup**, shown as a second line beside the reference amount.
 - **Calculator in the amount field**: arithmetic, parentheses, tip percentage and bill splitting.
 - Currency search by code, name or **country**.
+- **Country flags** beside every currency, derived from the country code rather than bundled
+  images: no assets to maintain, no licences to check, and they cover currencies added later.
+- Favourites start with the four most compared currencies (EUR, USD, CNY, GBP) instead of an
+  empty screen, and can be added straight from the currencies board.
 - Italian and English interface, with per-app language selection on Android 13 and above.
+- App icon drawn as the denarius of Juno Moneta — the temple on the Capitoline where Rome
+  struck coins, and the origin of the word "money" itself.
 
 ### Notes on correctness
 

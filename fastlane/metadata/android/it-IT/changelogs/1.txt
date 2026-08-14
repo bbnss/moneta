@@ -8,4 +8,6 @@ Prima versione.
 • Rilevamento della valuta locale senza alcun permesso di posizione
 • Grafici storici, maggiorazione della carta, calcolatrice integrata
 • Aritmetica decimale esatta — niente virgola mobile sul denaro
+• Bandiere dei paesi accanto a ogni valuta
+• Parte con EUR, USD, CNY e GBP fra le preferite
 • Nessuna pubblicità, nessun tracciatore, nessuna analisi

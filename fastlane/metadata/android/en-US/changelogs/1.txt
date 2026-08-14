@@ -8,4 +8,6 @@ First release.
 • Local currency detection without any location permission
 • Historical charts, card markup, built-in calculator
 • Exact decimal maths — no floating point on your money
+• Country flags beside every currency
+• Starts with EUR, USD, CNY and GBP as favourites
 • No ads, no trackers, no analytics
