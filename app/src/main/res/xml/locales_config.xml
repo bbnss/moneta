@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Lingue offerte nel selettore di sistema (per-app language, Android 13+).
+  Ogni traduzione aggiunta in res/values-<lingua> va elencata anche qui,
+  altrimenti non compare fra le scelte possibili.
+-->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="en" />
+    <locale android:name="it" />
+</locale-config>

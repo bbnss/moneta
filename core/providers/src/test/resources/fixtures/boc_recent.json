@@ -1,0 +1,13 @@
+{
+  "terms": {"url": "https://www.bankofcanada.ca/terms/"},
+  "seriesDetail": {
+    "FXUSDCAD": {"label": "USD/CAD", "description": "daily value of the US dollar expressed in Canadian dollars, for 1 unit of US dollar"},
+    "FXAUDCAD": {"label": "AUD/CAD", "description": "daily value of the Australian dollar expressed in Canadian dollars, for 1 unit of Australian dollar"},
+    "FXVNDCAD": {"label": "VND/CAD", "description": "discontinued series"}
+  },
+  "observations": [
+    {"d": "2019-12-31", "FXVNDCAD": {"v": "0.000056"}},
+    {"d": "2026-08-06", "FXUSDCAD": {"v": "1.3800"}},
+    {"d": "2026-08-07", "FXUSDCAD": {"v": "1.3750"}, "FXAUDCAD": {"v": "0.9012"}}
+  ]
+}

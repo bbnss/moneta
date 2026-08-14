@@ -1,0 +1,11 @@
+First release.
+
+• Converts offline from the very first launch, using rates bundled in the app
+• Always shows how old the rates are and which source they came from
+• Eight independent sources with automatic fallback, plus your own self-hosted endpoint
+• Cash table with the real banknotes of the local currency
+• Multi-currency board
+• Local currency detection without any location permission
+• Historical charts, card markup, built-in calculator
+• Exact decimal maths — no floating point on your money
+• No ads, no trackers, no analytics

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Nome proprio dell'app: non va tradotto in nessuna lingua. -->
+    <string name="app_name" translatable="false">Moneta</string>
+
+    <!-- Convert screen -->
+    <string name="convert_title">Convert</string>
+    <string name="convert_swap">Swap currencies</string>
+    <string name="convert_rate_line">1 %1$s = %2$s %3$s</string>
+    <string name="convert_pick_currency">Choose a currency</string>
+    <string name="convert_search_currency">Search by code, name or country</string>
+    <string name="convert_no_currency_found">No currency matches “%1$s”</string>
+    <string name="convert_unsupported_pair">%1$s does not publish a rate for this pair</string>
+    <string name="convert_division_by_zero">Cannot divide by zero</string>
+    <string name="convert_favourites">Favourites</string>
+    <string name="convert_all_currencies">All currencies</string>
+    <string name="convert_add_favourite">Add to favourites</string>
+    <string name="convert_remove_favourite">Remove from favourites</string>
+
+    <!-- Keypad -->
+    <string name="keypad_clear">C</string>
+    <string name="keypad_backspace">Delete last character</string>
+    <string name="keypad_equals">Calculate</string>
+
+    <!-- Freshness -->
+    <string name="freshness_today">Updated today at %1$s</string>
+    <string name="freshness_yesterday">Updated yesterday at %1$s</string>
+    <plurals name="freshness_days_ago">
+        <item quantity="one">Updated %1$d day ago</item>
+        <item quantity="other">Updated %1$d days ago</item>
+    </plurals>
+    <plurals name="freshness_stale">
+        <item quantity="one">Rates are %1$d day old — they may be inaccurate</item>
+        <item quantity="other">Rates are %1$d days old — they may be inaccurate</item>
+    </plurals>
+    <string name="freshness_unknown">No rates yet</string>
+    <string name="freshness_source">Source: %1$s</string>
+    <string name="freshness_substituted">%1$s was unreachable, showing data from %2$s</string>
+    <string name="freshness_rate_date">Rates dated %1$s</string>
+    <string name="freshness_details">Rate details</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_open">Settings</string>
+
+    <string name="settings_section_source">Rate source</string>
+    <plurals name="settings_provider_currencies">
+        <item quantity="one">%1$d currency</item>
+        <item quantity="other">%1$d currencies</item>
+    </plurals>
+    <string name="settings_cadence_daily">once per business day</string>
+    <string name="settings_cadence_intraday">several times a day</string>
+    <string name="settings_cadence_monthly">once a month</string>
+    <string name="settings_failover">Try other sources automatically</string>
+    <string name="settings_failover_explain">If your source is unreachable, the app uses the next one and tells you which. Turn this off to only ever use the source you picked.</string>
+    <string name="settings_custom_endpoint">Self-hosted endpoint</string>
+    <string name="settings_custom_endpoint_explain">Address of your own Frankfurter instance. Use this where the public endpoints are blocked. Leave empty to disable.</string>
+    <string name="settings_custom_endpoint_invalid">The address must start with http:// or https://</string>
+
+    <string name="settings_section_updates">Updates</string>
+    <string name="settings_interval">Update every</string>
+    <plurals name="settings_interval_hours">
+        <item quantity="one">%1$d hour</item>
+        <item quantity="other">%1$d hours</item>
+    </plurals>
+    <string name="settings_interval_weekly">week</string>
+    <string name="settings_interval_manual">Only when I ask</string>
+    <string name="settings_wifi_only">Only on Wi-Fi</string>
+    <string name="settings_wifi_only_explain">Avoids using mobile data, which is what you want while roaming.</string>
+    <string name="settings_offline">Offline mode</string>
+    <string name="settings_offline_explain">Blocks all network traffic. The app keeps working on the rates it already has.</string>
+
+    <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_system">Follow system</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_theme_oled">Black (AMOLED)</string>
+    <string name="settings_dynamic_color">Colours from wallpaper</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_explain">Opens the system settings for this app.</string>
+
+    <string name="settings_section_about">About</string>
+    <string name="settings_version">Version %1$s</string>
+    <string name="settings_licence">GPL-3.0-or-later — free and open source</string>
+    <string name="settings_source_code">Source code</string>
+    <string name="settings_privacy">No ads, no trackers, no analytics. The app only ever contacts the rate sources listed above.</string>
+
+    <!-- Historical chart -->
+    <string name="history_title">%1$s → %2$s</string>
+    <string name="history_open">Show the rate history</string>
+    <string name="history_back">Back</string>
+    <string name="history_loading">Loading history…</string>
+    <string name="history_empty">No history available for this pair — the current source does not publish one, or it has never been downloaded.</string>
+    <string name="history_low">Low</string>
+    <string name="history_high">High</string>
+    <string name="history_latest">Latest</string>
+    <string name="history_change">%1$s over this period</string>
+    <string name="history_range_1m">1M</string>
+    <string name="history_range_3m">3M</string>
+    <string name="history_range_6m">6M</string>
+    <string name="history_range_1y">1Y</string>
+    <string name="history_range_5y">5Y</string>
+    <string name="history_range_max">Max</string>
+
+    <!-- Local currency suggestion -->
+    <string name="suggestion_local_currency">Looks like you are in %1$s. Convert from %2$s?</string>
+    <string name="suggestion_accept">Use %1$s</string>
+    <string name="suggestion_dismiss">No thanks</string>
+
+    <!-- Card / exchange markup -->
+    <string name="markup_label">Card or bureau fee</string>
+    <string name="markup_with_fee">%1$s with %2$s fee</string>
+    <string name="markup_chip_none">Add card fee</string>
+    <string name="markup_chip_set">Fee %1$s</string>
+    <string name="markup_explain">Reference rates are not what a bank or a bureau actually gives you. Set the markup they charge to see a realistic amount.</string>
+    <string name="markup_none">None</string>
+    <string name="markup_save">Save</string>
+    <string name="markup_cancel">Cancel</string>
+
+    <!-- Navigation -->
+    <string name="nav_convert">Convert</string>
+    <string name="nav_board">Currencies</string>
+    <string name="nav_ratecard">Cash</string>
+
+    <!-- Multi-currency board -->
+    <string name="board_title">Your currencies</string>
+    <string name="board_empty_title">No favourite currencies yet</string>
+    <string name="board_empty_body">Star a few currencies and they will all be converted here at once.</string>
+    <string name="board_set_as_base">Use %1$s as the amount currency</string>
+    <string name="board_base_hint">Long-press a row to convert from that currency instead</string>
+
+    <!-- Travel rate card -->
+    <string name="ratecard_title">%1$s in %2$s</string>
+    <string name="ratecard_subtitle">What each banknote is worth</string>
+    <string name="ratecard_estimated">Banknotes for %1$s are not in our list — these amounts are a reasonable guess.</string>
+    <string name="ratecard_share">Share this table</string>
+    <string name="ratecard_share_title">Exchange rate table</string>
+    <string name="ratecard_unsupported">%1$s does not publish a rate for this pair, so no table can be shown.</string>
+
+    <!-- Refresh -->
+    <string name="refresh">Refresh rates</string>
+    <string name="refresh_updated">Rates updated from %1$s</string>
+    <string name="refresh_failed">Could not reach any source — showing the last saved rates</string>
+    <string name="refresh_offline">Offline mode is on</string>
+    <string name="history_error_network">Could not reach the rate source. Connect and try again.</string>
+    <string name="history_error_format">The source answered in an unexpected format — it has probably changed. Please report it.</string>
+    <string name="history_error_offline">Offline mode is on and this period has never been downloaded.</string>
+    <string name="board_add_currency">Add a currency</string>
+</resources>

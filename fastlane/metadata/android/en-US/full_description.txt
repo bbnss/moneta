@@ -1,0 +1,32 @@
+Moneta answers "how much is 45,000 dong in euros?" in two seconds — on a plane, in a market with no signal, or in a country where half the internet is unreachable.
+
+Most currency apps fail on at least one of these. Moneta is built around all three.
+
+<b>It works before it has ever seen the internet.</b>
+A rate snapshot ships inside the app, so it converts correctly the very first time you open it, even with the network off. From then on it keeps a local copy of everything and the interface never waits on a connection.
+
+<b>It never hides how old the rates are.</b>
+Every screen shows when the rates were last updated and which source they came from. Past a week, it says so in red. A rate without a stated age is a number you cannot trust, and showing one in silence is the flaw common to nearly every converter.
+
+<b>It does not depend on one endpoint.</b>
+Moneta talks to eight independent sources — the Frankfurter aggregate of 84 central banks, a CDN-hosted dataset that stays reachable where direct APIs are blocked, and several central banks including the ECB, Bank of Canada, Norges Bank and Bank Rossii. If one is unreachable, the next one is used and the app tells you which. You can also point it at your own self-hosted instance.
+
+<b>Made for travelling</b>
+
+• Cash table: what each real banknote of the local currency is worth, for the denominations actually in circulation — 1,000 to 500,000 dong in Vietnam, not a generic 1-2-5 list
+• Multi-currency board: one amount, all your currencies converted at once
+• Local currency detection with no location permission and no GPS
+• Historical charts with grid and axes
+• Card or bureau markup, so you see what you will actually be handed
+• Calculator built into the amount field: split the bill, add the tip
+• Search currencies by country — type "Vietnam", not "VND"
+
+<b>Exact maths</b>
+Money is never stored or calculated as a floating-point number. Amounts stay exact through every conversion, which matters most for high-denomination currencies where the error would be visible.
+
+<b>Privacy</b>
+No ads, no trackers, no analytics, no Google Play Services. The only permission that matters is internet access, used solely to download rates.
+
+Free and open source software, GPL-3.0-or-later.
+
+Rates are reference rates. They are not what a bank or a bureau will actually give you — that is what the configurable markup is for.

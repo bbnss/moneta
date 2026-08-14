@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Schermata Converti -->
+    <string name="convert_title">Converti</string>
+    <string name="convert_swap">Scambia le valute</string>
+    <string name="convert_rate_line">1 %1$s = %2$s %3$s</string>
+    <string name="convert_pick_currency">Scegli una valuta</string>
+    <string name="convert_search_currency">Cerca per codice, nome o paese</string>
+    <string name="convert_no_currency_found">Nessuna valuta corrisponde a «%1$s»</string>
+    <string name="convert_unsupported_pair">%1$s non pubblica un tasso per questa coppia</string>
+    <string name="convert_division_by_zero">Non si può dividere per zero</string>
+    <string name="convert_favourites">Preferite</string>
+    <string name="convert_all_currencies">Tutte le valute</string>
+    <string name="convert_add_favourite">Aggiungi alle preferite</string>
+    <string name="convert_remove_favourite">Togli dalle preferite</string>
+
+    <!-- Tastierino -->
+    <string name="keypad_clear">C</string>
+    <string name="keypad_backspace">Cancella l\'ultimo carattere</string>
+    <string name="keypad_equals">Calcola</string>
+
+    <!-- Freschezza dei dati -->
+    <string name="freshness_today">Aggiornato oggi alle %1$s</string>
+    <string name="freshness_yesterday">Aggiornato ieri alle %1$s</string>
+    <!-- L'italiano ha anche la categoria "many" (milioni), che vuole la
+         preposizione: "un milione DI giorni". Non capiterà mai con dei tassi di
+         cambio, ma CLDR la richiede e senza il layout resta incompleto. -->
+    <plurals name="freshness_days_ago">
+        <item quantity="one">Aggiornato %1$d giorno fa</item>
+        <item quantity="many">Aggiornato %1$d di giorni fa</item>
+        <item quantity="other">Aggiornato %1$d giorni fa</item>
+    </plurals>
+    <plurals name="freshness_stale">
+        <item quantity="one">Tassi di %1$d giorno fa — potrebbero non essere accurati</item>
+        <item quantity="many">Tassi di %1$d di giorni fa — potrebbero non essere accurati</item>
+        <item quantity="other">Tassi di %1$d giorni fa — potrebbero non essere accurati</item>
+    </plurals>
+    <string name="freshness_unknown">Nessun tasso disponibile</string>
+    <string name="freshness_source">Fonte: %1$s</string>
+    <string name="freshness_substituted">%1$s non raggiungibile, dati da %2$s</string>
+    <string name="freshness_rate_date">Tassi al %1$s</string>
+    <string name="freshness_details">Dettagli del tasso</string>
+
+    <!-- Impostazioni -->
+    <string name="settings_title">Impostazioni</string>
+    <string name="settings_open">Impostazioni</string>
+
+    <string name="settings_section_source">Fonte dei tassi</string>
+    <plurals name="settings_provider_currencies">
+        <item quantity="one">%1$d valuta</item>
+        <item quantity="many">%1$d di valute</item>
+        <item quantity="other">%1$d valute</item>
+    </plurals>
+    <string name="settings_cadence_daily">una volta per giorno lavorativo</string>
+    <string name="settings_cadence_intraday">più volte al giorno</string>
+    <string name="settings_cadence_monthly">una volta al mese</string>
+    <string name="settings_failover">Prova altre fonti automaticamente</string>
+    <string name="settings_failover_explain">Se la tua fonte non risponde, l\'app usa la successiva e ti dice quale. Disattivalo per usare sempre e solo quella scelta.</string>
+    <string name="settings_custom_endpoint">Endpoint self-hosted</string>
+    <string name="settings_custom_endpoint_explain">Indirizzo di una tua istanza Frankfurter. Serve dove gli endpoint pubblici sono bloccati. Lascia vuoto per disattivarlo.</string>
+    <string name="settings_custom_endpoint_invalid">L\'indirizzo deve iniziare con http:// o https://</string>
+
+    <string name="settings_section_updates">Aggiornamenti</string>
+    <string name="settings_interval">Aggiorna ogni</string>
+    <plurals name="settings_interval_hours">
+        <item quantity="one">%1$d ora</item>
+        <item quantity="many">%1$d di ore</item>
+        <item quantity="other">%1$d ore</item>
+    </plurals>
+    <string name="settings_interval_weekly">settimana</string>
+    <string name="settings_interval_manual">Solo quando lo chiedo</string>
+    <string name="settings_wifi_only">Solo su Wi-Fi</string>
+    <string name="settings_wifi_only_explain">Evita di consumare dati mobili, che è quello che serve in roaming.</string>
+    <string name="settings_offline">Modalità offline</string>
+    <string name="settings_offline_explain">Blocca ogni traffico di rete. L\'app continua a funzionare sui tassi che ha già.</string>
+
+    <string name="settings_section_appearance">Aspetto</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_theme_system">Come il sistema</string>
+    <string name="settings_theme_light">Chiaro</string>
+    <string name="settings_theme_dark">Scuro</string>
+    <string name="settings_theme_oled">Nero (AMOLED)</string>
+    <string name="settings_dynamic_color">Colori dallo sfondo</string>
+    <string name="settings_language">Lingua</string>
+    <string name="settings_language_explain">Apre le impostazioni di sistema per questa app.</string>
+
+    <string name="settings_section_about">Informazioni</string>
+    <string name="settings_version">Versione %1$s</string>
+    <string name="settings_licence">GPL-3.0-or-later — libera e open source</string>
+    <string name="settings_source_code">Codice sorgente</string>
+    <string name="settings_privacy">Nessuna pubblicità, nessun tracciatore, nessuna analisi. L\'app contatta solo le fonti dei tassi elencate sopra.</string>
+
+    <!-- Grafico storico -->
+    <string name="history_title">%1$s → %2$s</string>
+    <string name="history_open">Mostra l\'andamento del cambio</string>
+    <string name="history_back">Indietro</string>
+    <string name="history_loading">Carico lo storico…</string>
+    <string name="history_empty">Nessuno storico per questa coppia: la fonte attuale non lo pubblica, oppure non è mai stato scaricato.</string>
+    <string name="history_low">Minimo</string>
+    <string name="history_high">Massimo</string>
+    <string name="history_latest">Ultimo</string>
+    <string name="history_change">%1$s nel periodo</string>
+    <string name="history_range_1m">1M</string>
+    <string name="history_range_3m">3M</string>
+    <string name="history_range_6m">6M</string>
+    <string name="history_range_1y">1A</string>
+    <string name="history_range_5y">5A</string>
+    <string name="history_range_max">Max</string>
+
+    <!-- Suggerimento sulla valuta locale -->
+    <string name="suggestion_local_currency">Sembra tu sia in %1$s. Converto da %2$s?</string>
+    <string name="suggestion_accept">Usa %1$s</string>
+    <string name="suggestion_dismiss">No, grazie</string>
+
+    <!-- Commissione di carta o cambiavalute -->
+    <string name="markup_label">Commissione carta o cambio</string>
+    <string name="markup_with_fee">%1$s con commissione %2$s</string>
+    <string name="markup_chip_none">Aggiungi commissione</string>
+    <string name="markup_chip_set">Commissione %1$s</string>
+    <string name="markup_explain">I tassi di riferimento non sono quelli che dà davvero una banca o un cambiavalute. Imposta la maggiorazione che applicano per vedere una cifra realistica.</string>
+    <string name="markup_none">Nessuna</string>
+    <string name="markup_save">Salva</string>
+    <string name="markup_cancel">Annulla</string>
+
+    <!-- Navigazione -->
+    <string name="nav_convert">Converti</string>
+    <string name="nav_board">Valute</string>
+    <string name="nav_ratecard">Contanti</string>
+
+    <!-- Board multi-valuta -->
+    <string name="board_title">Le tue valute</string>
+    <string name="board_empty_title">Nessuna valuta preferita</string>
+    <string name="board_empty_body">Aggiungi qualche valuta alle preferite e le vedrai convertite tutte insieme qui.</string>
+    <string name="board_set_as_base">Usa %1$s come valuta dell\'importo</string>
+    <string name="board_base_hint">Tieni premuta una riga per convertire a partire da quella valuta</string>
+
+    <!-- Tabella da viaggio -->
+    <string name="ratecard_title">%1$s in %2$s</string>
+    <string name="ratecard_subtitle">Quanto vale ogni banconota</string>
+    <string name="ratecard_estimated">I tagli di %1$s non sono nel nostro elenco: questi importi sono una stima ragionevole.</string>
+    <string name="ratecard_share">Condividi la tabella</string>
+    <string name="ratecard_share_title">Tabella dei cambi</string>
+    <string name="ratecard_unsupported">%1$s non pubblica un tasso per questa coppia, quindi non c\'è tabella da mostrare.</string>
+
+    <!-- Aggiornamento -->
+    <string name="refresh">Aggiorna i tassi</string>
+    <string name="refresh_updated">Tassi aggiornati da %1$s</string>
+    <string name="refresh_failed">Nessuna fonte raggiungibile — mostrati gli ultimi tassi salvati</string>
+    <string name="refresh_offline">La modalità offline è attiva</string>
+    <string name="history_error_network">Non è stato possibile raggiungere la fonte dei tassi. Connettiti e riprova.</string>
+    <string name="history_error_format">La fonte ha risposto in un formato inatteso: probabilmente è cambiata. Segnalacelo.</string>
+    <string name="history_error_offline">La modalità offline è attiva e questo periodo non è mai stato scaricato.</string>
+    <string name="board_add_currency">Aggiungi una valuta</string>
+</resources>

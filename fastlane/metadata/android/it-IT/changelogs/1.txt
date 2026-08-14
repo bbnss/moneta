@@ -1,0 +1,11 @@
+Prima versione.
+
+• Converte offline fin dal primo avvio, con i tassi inclusi nell'app
+• Dichiara sempre quanto sono vecchi i tassi e da quale fonte arrivano
+• Otto fonti indipendenti con ricaduta automatica, più il tuo endpoint self-hosted
+• Tabella dei contanti con le banconote reali della valuta locale
+• Board multi-valuta
+• Rilevamento della valuta locale senza alcun permesso di posizione
+• Grafici storici, maggiorazione della carta, calcolatrice integrata
+• Aritmetica decimale esatta — niente virgola mobile sul denaro
+• Nessuna pubblicità, nessun tracciatore, nessuna analisi

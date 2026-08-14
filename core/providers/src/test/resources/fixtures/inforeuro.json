@@ -1,0 +1,6 @@
+[
+  {"country": "Belgium", "currency": "Euro", "isoA3Code": "EUR", "isoA2Code": "BE", "value": 1, "comment": "The euro is the currency of several countries"},
+  {"country": "United States", "currency": "US dollar", "isoA3Code": "USD", "isoA2Code": "US", "value": 1.1476, "comment": null},
+  {"country": "Japan", "currency": "Yen", "isoA3Code": "JPY", "isoA2Code": "JP", "value": 186.99, "comment": null},
+  {"country": "Vietnam", "currency": "Dong", "isoA3Code": "VND", "isoA2Code": "VN", "value": 30207.701, "comment": null}
+]

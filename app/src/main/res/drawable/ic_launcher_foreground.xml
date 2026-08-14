@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Il denario di Giunone Moneta: dal tempio della dea sul Campidoglio, dove Roma
+  batteva moneta, viene la parola stessa "moneta".
+
+  È un vettore e non un'immagine: pesa nulla, resta nitido a ogni densità e non
+  porta licenze da verificare. Il disegno è ridotto all'osso — profilo e bordo
+  perlinato — perché a 48dp qualunque dettaglio in più diventa sporcizia.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Bordo perlinato, come sul conio originale. -->
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M89.50 52.50a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M89.24 56.78a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M88.47 61.00a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M87.19 65.09a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M85.43 69.00a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M83.22 72.67a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M80.57 76.04a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M77.54 79.07a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M74.17 81.72a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M70.50 83.93a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M66.59 85.69a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M62.50 86.97a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M58.28 87.74a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M54.00 88.00a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M49.72 87.74a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M45.50 86.97a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M41.41 85.69a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M37.50 83.93a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M33.83 81.72a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M30.46 79.07a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M27.43 76.04a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M24.78 72.67a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M22.57 69.00a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M20.81 65.09a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M19.53 61.00a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M18.76 56.78a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M18.50 52.50a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M18.76 48.22a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M19.53 44.00a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M20.81 39.91a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M22.57 36.00a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M24.78 32.33a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M27.43 28.96a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M30.46 25.93a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M33.83 23.28a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M37.50 21.07a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M41.41 19.31a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M45.50 18.03a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M49.72 17.26a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M54.00 17.00a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M58.28 17.26a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M62.50 18.03a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M66.59 19.31a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M70.50 21.07a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M74.17 23.28a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M77.54 25.93a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M80.57 28.96a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M83.22 32.33a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M85.43 36.00a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M87.19 39.91a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M88.47 44.00a1.50 1.50 0 1 0 0.01 0Z" />
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M89.24 48.22a1.50 1.50 0 1 0 0.01 0Z" />
+
+    <!-- Giunone di profilo, rivolta a destra come sul denario. -->
+    <path
+        android:fillColor="#FF2B3644"
+        android:pathData="M56.86 26.72C64.78 27.60 69.18 31.12 70.06 36.40C70.94 39.04 71.38 40.80 71.38 43.00C71.38 44.32 70.06 44.76 69.62 45.64L75.78 51.80C76.04 53.12 74.02 54.18 70.06 54.35C72.26 55.76 72.08 57.52 69.18 58.40C71.82 60.16 72.26 62.36 69.18 64.12C66.10 66.76 63.02 68.08 61.70 70.72L61.70 81.28L49.38 81.28L49.38 68.96C43.66 65.88 39.26 61.04 37.50 54.88C32.22 51.36 32.22 42.56 36.62 37.28C40.14 31.12 47.18 26.72 56.86 26.72Z" />
+</vector>

@@ -1,0 +1,9 @@
+; Configurazione per il client da riga di comando di Weblate (wlc).
+; Le traduzioni vivono in app/src/main/res/values-<lingua>/strings.xml e sono
+; l'unico file che i traduttori devono toccare: i nomi delle valute e dei paesi
+; arrivano da ICU e non vanno tradotti a mano.
+[weblate]
+url = https://hosted.weblate.org/api/
+
+[component "moneta/app"]
+url = https://hosted.weblate.org/api/

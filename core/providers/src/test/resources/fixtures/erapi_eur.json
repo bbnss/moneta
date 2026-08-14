@@ -1,0 +1,9 @@
+{
+  "result": "success",
+  "provider": "https://www.exchangerate-api.com",
+  "time_last_update_unix": 1786320151,
+  "time_last_update_utc": "Mon, 10 Aug 2026 00:02:31 +0000",
+  "time_next_update_unix": 1786407421,
+  "base_code": "EUR",
+  "rates": {"EUR": 1, "USD": 1.156035, "JPY": 182.449563, "VND": 30366.384493}
+}

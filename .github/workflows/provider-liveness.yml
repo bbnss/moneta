@@ -1,0 +1,86 @@
+# I provider di terzi cambiano forma o spariscono senza preavviso: è così che il
+# competitor principale ha perso due fonti. Questo job li interroga davvero una
+# volta a settimana e apre una issue appena uno smette di rispondere come atteso.
+name: Provider liveness
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Interroga gli endpoint reali
+        id: probe
+        run: |
+          set +e
+          report=""
+          fail=0
+
+          check() {
+            name="$1"; url="$2"; needle="$3"
+            body=$(curl -sS -m 20 --retry 2 "$url")
+            code=$?
+            if [ $code -ne 0 ]; then
+              report="${report}- ❌ **${name}**: richiesta fallita (curl exit ${code})"$'\n'
+              fail=1
+            elif ! printf '%s' "$body" | grep -q "$needle"; then
+              report="${report}- ⚠️ **${name}**: risposta ricevuta ma senza \`${needle}\` — formato probabilmente cambiato"$'\n'
+              fail=1
+            else
+              report="${report}- ✅ ${name}"$'\n'
+            fi
+          }
+
+          check "Frankfurter v2"  "https://api.frankfurter.dev/v2/rates?base=EUR&quotes=USD" '"rate"'
+          check "Frankfurter currencies" "https://api.frankfurter.dev/v2/currencies" '"iso_code"'
+          check "fawazahmed0 (jsDelivr)" "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.min.json" '"usd"'
+          check "fawazahmed0 (mirror)" "https://latest.currency-api.pages.dev/v1/currencies/eur.min.json" '"usd"'
+          check "ExchangeRate-API open" "https://open.er-api.com/v6/latest/EUR" '"rates"'
+          check "BCE XML" "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml" "currency='USD'"
+          check "Bank of Canada" "https://www.bankofcanada.ca/valet/observations/group/FX_RATES_DAILY/json?recent=1" '"observations"'
+          check "Norges Bank" "https://data.norges-bank.no/api/data/EXR/B..NOK.SP?lastNObservations=1&format=sdmx-json" '"data"'
+          check "InforEuro" "https://ec.europa.eu/budg/inforeuro/api/public/monthly-rates?lang=EN" '"isoA3Code"'
+
+          {
+            echo "report<<EOF"
+            echo "$report"
+            echo "EOF"
+            echo "fail=$fail"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "$report"
+
+      - name: Apri una issue se qualcosa è cambiato
+        if: steps.probe.outputs.fail == '1'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = `Il controllo settimanale dei provider ha rilevato un problema.\n\n${{ toJSON(steps.probe.outputs.report) }}\n\nSe un provider ha cambiato formato, aggiorna il parser e la fixture corrispondente in \`core/providers\`.`;
+            const title = 'Provider liveness: un endpoint non risponde come atteso';
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'provider-liveness',
+            });
+            if (existing.data.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.data[0].number,
+                body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['provider-liveness'],
+              });
+            }

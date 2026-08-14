@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Argento del denario: il conio era d'argento, e un fondo chiaro con
+         l'incisione scura fa leggere l'icona come una moneta vera. -->
+    <color name="ic_launcher_background">#BFC6CE</color>
+</resources>
