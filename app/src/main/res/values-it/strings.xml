@@ -106,6 +106,7 @@
     <string name="history_range_1y">1A</string>
     <string name="history_range_5y">5A</string>
     <string name="history_range_max">Max</string>
+    <string name="history_source">Fonte: %1$s · %2$s – %3$s</string>
 
     <!-- Suggerimento sulla valuta locale -->
     <string name="suggestion_local_currency">Sembra tu sia in %1$s. Converto da %2$s?</string>
@@ -133,6 +134,9 @@
     <string name="board_empty_body">Aggiungi qualche valuta alle preferite e le vedrai convertite tutte insieme qui.</string>
     <string name="board_set_as_base">Usa %1$s come valuta dell\'importo</string>
     <string name="board_base_hint">Tieni premuta una riga per convertire a partire da quella valuta</string>
+    <string name="board_clear_amount">Azzera l\'importo</string>
+    <string name="board_hide_keypad">Nascondi il tastierino</string>
+    <string name="board_show_keypad">Mostra il tastierino</string>
 
     <!-- Tabella da viaggio -->
     <string name="ratecard_title">%1$s in %2$s</string>

@@ -284,10 +284,34 @@ facendola; chi non sa risponde `UNSUPPORTED`, che è già un esito di prima clas
 Conseguenza operativa: la build di release va **installata e provata**, non solo compilata.
 Un `assembleRelease` che riesce non dice nulla su cosa R8 ha rimosso.
 
+## Lezione da non ripetere: la cache HTTP che fingeva un aggiornamento
+
+Con il telefono in modalità aereo, l'aggiornamento manuale riusciva e scriveva un orario
+nuovo. La causa: la cache di OkHttp considera *fresca* una copia locale finché dura il
+`max-age` dichiarato dal server — ore, su una CDN — e la restituisce **senza toccare la
+rete**. Al chiamante arriva un 200 indistinguibile da una richiesta riuscita.
+
+L'effetto è il peggiore possibile per quest'app: tassi di ieri con sopra scritto "aggiornato
+adesso". L'indicatore di freschezza è la funzione identitaria del progetto, e stava mentendo.
+
+Due regole adottate, complementari:
+
+1. **Ogni richiesta di tassi porta `Cache-Control: max-age=0`**, che obbliga a rivalidare.
+   Non si rinuncia alla cache: se i dati non sono cambiati la fonte risponde 304 senza corpo
+   e i byte li fornisce comunque il disco, che era il motivo per cui la cache esiste.
+2. **Un aggiornamento va dimostrato, non supposto.** Un interceptor scarta le risposte in cui
+   `networkResponse` è nulla — cioè quelle mai passate dalla rete — trasformandole in un
+   errore di rete, che la catena di ricaduta sa già gestire.
+
+Regola generale che se ne ricava, gemella di quella su R8: **nessuna affermazione mostrata
+all'utente deve poggiare su un'inferenza.** "Aggiornato adesso" si scrive solo se qualcuno
+ha davvero risposto adesso.
+
 ## Stato
 
-Fasi 0-9 completate. 95 test JVM, lint pulito (restano solo gli avvisi deliberati sulle
-versioni bloccate). APK di release 2,7 MB, verificato sul dispositivo dopo lo shrinking.
+Fasi 0-9 completate. 97 test JVM, lint pulito (restano solo gli avvisi deliberati sulle
+versioni bloccate). APK di release 2,9 MB, verificato sul dispositivo dopo lo shrinking —
+compreso il caso in modalità aereo, che è quello che ha fatto emergere il bug qui sopra.
 
 ## Punti ancora aperti
 

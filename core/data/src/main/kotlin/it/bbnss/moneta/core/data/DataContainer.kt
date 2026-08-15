@@ -10,6 +10,7 @@ import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.UserAgent
 import okhttp3.Cache
 import java.io.File
+import java.io.IOException
 import java.time.Clock
 
 /**
@@ -46,10 +47,28 @@ class DataContainer private constructor(context: Context) {
                     // La cache HTTP di OkHttp gestisce da sola `ETag` e
                     // `If-None-Match`: quando i tassi non sono cambiati la
                     // risposta è un 304 senza corpo, e in roaming la differenza
-                    // fra 10 kB e zero si sente. Frankfurter dichiara anche
-                    // `stale-if-error`, quindi la cache copre pure le finestre
-                    // in cui la fonte è temporaneamente rotta.
+                    // fra 10 kB e zero si sente.
                     cache(Cache(File(appContext.cacheDir, "http"), HTTP_CACHE_BYTES))
+
+                    // Un aggiornamento deve essere dimostrato, non supposto.
+                    //
+                    // La cache serve a non riscaricare byte identici, non a far
+                    // credere di aver parlato con la fonte: se la risposta
+                    // arriva solo dal disco, la rete non ha confermato niente e
+                    // l'orario di aggiornamento non va toccato. Qui la
+                    // differenza si vede, perché `networkResponse` è valorizzata
+                    // solo quando uno scambio è avvenuto davvero — anche se si è
+                    // risolto in un 304.
+                    addInterceptor { chain ->
+                        val response = chain.proceed(chain.request())
+                        if (response.networkResponse == null) {
+                            response.close()
+                            throw IOException(
+                                "Risposta servita dalla cache locale: la fonte non è stata raggiunta",
+                            )
+                        }
+                        response
+                    }
                 }
             }
 

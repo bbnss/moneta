@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Argento del denario: il conio era d'argento, e un fondo chiaro con
-         l'incisione scura fa leggere l'icona come una moneta vera. -->
-    <color name="ic_launcher_background">#BFC6CE</color>
+    <!-- Blu ardesia scuro, lo stesso inchiostro del disegno vettoriale: è il
+         fondo che fa leggere l'argento del conio come argento. Un fondo chiaro
+         dietro una moneta d'argento la farebbe sparire. -->
+    <color name="ic_launcher_background">#2B3644</color>
 </resources>

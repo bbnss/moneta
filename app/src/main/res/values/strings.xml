@@ -102,6 +102,7 @@
     <string name="history_range_1y">1Y</string>
     <string name="history_range_5y">5Y</string>
     <string name="history_range_max">Max</string>
+    <string name="history_source">Source: %1$s · %2$s – %3$s</string>
 
     <!-- Local currency suggestion -->
     <string name="suggestion_local_currency">Looks like you are in %1$s. Convert from %2$s?</string>
@@ -129,6 +130,9 @@
     <string name="board_empty_body">Star a few currencies and they will all be converted here at once.</string>
     <string name="board_set_as_base">Use %1$s as the amount currency</string>
     <string name="board_base_hint">Long-press a row to convert from that currency instead</string>
+    <string name="board_clear_amount">Clear the amount</string>
+    <string name="board_hide_keypad">Hide the keypad</string>
+    <string name="board_show_keypad">Show the keypad</string>
 
     <!-- Travel rate card -->
     <string name="ratecard_title">%1$s in %2$s</string>

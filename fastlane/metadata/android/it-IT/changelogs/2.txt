@@ -1,0 +1,8 @@
+Correzioni di onestà, trovate tutte usando l'app.
+
+• Aggiornare senza rete non dichiara più di esserci riuscito. La cache rispondeva dal disco senza raggiungere la fonte, e tassi vecchi si ritrovavano un orario nuovo — l'unica cosa che quest'app non può sbagliare.
+• La riga della commissione non spinge più fuori schermo l'ultima fila di tasti.
+• "Max" mostra davvero vent'anni, e non l'intervallo più corto guardato prima.
+• Il grafico dichiara da quale fonte arrivano i numeri e quale periodo copre davvero.
+• La schermata delle valute si riprende lo schermo: tastierino numerico compatto, che si può anche chiudere.
+• Nuova icona dell'app, il denario di Giunone Moneta.

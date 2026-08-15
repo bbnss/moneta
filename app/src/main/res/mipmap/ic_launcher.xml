@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Il denario di Giunone Moneta, inciso a mano da chi firma l'app.
+
+  Il fondo è scuro di proposito: l'argento del conio si legge come metallo solo
+  se ha qualcosa di scuro dietro, e su un fondo chiaro la moneta sparirebbe nel
+  cassetto delle applicazioni.
+
+  Il livello monocromatico resta il vettore: le icone a tema di Android 13 sono
+  una silhouette tinta dal sistema, e una fotografia di una moneta d'argento
+  ridotta a una tinta piatta diventa un cerchio e basta.
+-->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@color/ic_launcher_background" />
-    <foreground android:drawable="@drawable/ic_launcher_foreground" />
-    <monochrome android:drawable="@drawable/ic_launcher_foreground" />
+    <foreground android:drawable="@mipmap/ic_launcher_foreground" />
+    <monochrome android:drawable="@drawable/ic_launcher_monochrome" />
 </adaptive-icon>

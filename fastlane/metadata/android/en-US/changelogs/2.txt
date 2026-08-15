@@ -1,0 +1,8 @@
+Honesty fixes, all found by using the app.
+
+• Refreshing with no network no longer claims success. The cache was answering from disk without reaching the source, so old rates got a fresh timestamp — the one thing this app must never get wrong.
+• The last row of the keypad can no longer be pushed off screen by the card fee line.
+• "Max" really shows twenty years now, instead of whatever shorter range had been viewed before.
+• The chart says which source the numbers come from, and the period actually covered.
+• The currencies board gets its screen back: a compact numeric keypad that can also be collapsed.
+• New app icon, the denarius of Juno Moneta.

@@ -165,9 +165,15 @@ class RateRepository(
         val registry = registryFactory(current.customEndpoint)
         val chain = registry.failoverChain(current.preferredProvider)
 
-        // La cache è considerata sufficiente se arriva a ridosso di oggi: le
-        // fonti pubblicano nei giorni lavorativi, quindi due giorni di scarto
-        // sono normali dopo un fine settimana.
+        // La cache basta solo se copre l'intervallo chiesto da tutte e due le
+        // parti.
+        //
+        // Guardare solo il punto più recente non basta: dopo aver visto sei
+        // mesi, chiedere "Max" trovava in cache proprio quei sei mesi, con
+        // l'ultimo punto di oggi, e restituiva quelli — un grafico etichettato
+        // vent'anni che ne mostrava sei. Dall'altro lato serve tolleranza: le
+        // fonti pubblicano nei giorni lavorativi, e nessuna ha uno storico
+        // infinito, quindi si accetta uno scarto di qualche giorno.
         var newestCached: RateSeries? = null
         for (provider in chain) {
             val cached = dao.seriesPoints(
@@ -181,8 +187,9 @@ class RateRepository(
             if (cached.points.isEmpty()) continue
             if (newestCached == null) newestCached = cached
 
-            val newest = cached.points.last().date
-            if (newest >= today.minusDays(3)) return SeriesResult.Available(cached)
+            val reachesToday = cached.points.last().date >= today.minusDays(3)
+            val reachesBack = cached.points.first().date <= from.plusDays(SERIES_START_TOLERANCE_DAYS)
+            if (reachesToday && reachesBack) return SeriesResult.Available(cached)
         }
 
         if (current.offlineMode) {
@@ -220,5 +227,17 @@ class RateRepository(
     private suspend fun persist(snapshot: RateSnapshot) {
         val (entity, rates) = snapshot.toEntities()
         dao.replaceSnapshot(entity, rates)
+    }
+
+    private companion object {
+        /**
+         * Di quanto può iniziare più tardi la serie in cache rispetto a quella
+         * chiesta, restando accettabile.
+         *
+         * Il primo punto utile cade quasi sempre qualche giorno dopo l'inizio
+         * dell'intervallo, fra fine settimana e festività. Una settimana copre
+         * anche i ponti più lunghi senza mascherare una cache davvero corta.
+         */
+        const val SERIES_START_TOLERANCE_DAYS = 7L
     }
 }

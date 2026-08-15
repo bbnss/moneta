@@ -4,7 +4,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material.icons.filled.SwapVert
@@ -47,6 +48,7 @@ import it.bbnss.moneta.core.model.Currency
 import it.bbnss.moneta.core.model.CurrencyMetadata
 import it.bbnss.moneta.core.ui.components.KeypadKey
 import it.bbnss.moneta.core.ui.components.MonetaKeypad
+import it.bbnss.moneta.core.ui.components.rememberKeyHeight
 import it.bbnss.moneta.ui.components.CurrencyPickerSheet
 import it.bbnss.moneta.ui.components.FreshnessBadge
 import java.text.DecimalFormatSymbols
@@ -80,145 +82,153 @@ fun ConvertScreen(
         }
     }
 
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        state.suggestion?.let { suggestion ->
-            LocalCurrencyBanner(
-                suggestion = suggestion,
-                onAccept = onAcceptSuggestion,
-                onDismiss = onDismissSuggestion,
-            )
-        }
-
-        AmountRow(
-            currency = state.from,
-            text = state.fromText,
-            active = state.activeField == Field.FROM,
-            onFieldClick = { onFieldSelected(Field.FROM) },
-            onCurrencyClick = { pickerFor = Field.FROM },
-        )
-
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            val rotation by animateFloatAsState(
-                targetValue = if (state.activeField == Field.FROM) 0f else 180f,
-                label = "swap",
-            )
-            FilledTonalIconButton(onClick = onSwap) {
-                Icon(
-                    Icons.Default.SwapVert,
-                    contentDescription = stringResource(R.string.convert_swap),
-                    modifier = Modifier.rotate(rotation),
-                )
-            }
-        }
-
-        AmountRow(
-            currency = state.to,
-            text = state.toText,
-            active = state.activeField == Field.TO,
-            onFieldClick = { onFieldSelected(Field.TO) },
-            onCurrencyClick = { pickerFor = Field.TO },
-        )
-
+    Column(modifier = modifier.fillMaxSize()) {
+        // Il tastierino sta fuori dall'area che scorre, e viene misurato per
+        // primo: è così che si garantisce che l'ultima riga di tasti ci sia
+        // sempre. Tutto ciò che sta sopra — banner del paese, riga della
+        // commissione, avvisi — può comparire e sparire senza spingere lo zero
+        // e la virgola fuori dallo schermo, perché scorre invece di traboccare.
         Column(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(2.dp),
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            // La riga con la commissione sta sopra il tasso e sotto il
-            // risultato: è la cifra che conta davvero per chi sta per pagare.
-            state.withFeeText?.let { withFee ->
-                Text(
-                    text = stringResource(
-                        R.string.markup_with_fee,
-                        withFee,
-                        "${state.markupPercent.stripTrailingZeros().toPlainString()}%",
-                    ),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.tertiary,
+            state.suggestion?.let { suggestion ->
+                LocalCurrencyBanner(
+                    suggestion = suggestion,
+                    onAccept = onAcceptSuggestion,
+                    onDismiss = onDismissSuggestion,
                 )
             }
 
-            if (state.rate != null) {
-                // Il tasso è il punto naturale da cui chiedere "e prima?", ma
-                // un testo che si può toccare non si distingue da uno che non
-                // si può: l'icona rende visibile che lì sotto c'è un grafico.
-                Row(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable(onClick = onOpenHistory)
-                        .semantics(mergeDescendants = true) {
-                            contentDescription = openHistoryLabel
-                        }
-                        .padding(horizontal = 8.dp, vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    Text(
-                        text = stringResource(
-                            R.string.convert_rate_line,
-                            state.from.code,
-                            AmountFormat.formatRate(state.rate),
-                            state.to.code,
-                        ),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+            AmountRow(
+                currency = state.from,
+                text = state.fromText,
+                active = state.activeField == Field.FROM,
+                onFieldClick = { onFieldSelected(Field.FROM) },
+                onCurrencyClick = { pickerFor = Field.FROM },
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                val rotation by animateFloatAsState(
+                    targetValue = if (state.activeField == Field.FROM) 0f else 180f,
+                    label = "swap",
+                )
+                FilledTonalIconButton(onClick = onSwap) {
                     Icon(
-                        imageVector = Icons.Default.ShowChart,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(18.dp),
+                        Icons.Default.SwapVert,
+                        contentDescription = stringResource(R.string.convert_swap),
+                        modifier = Modifier.rotate(rotation),
                     )
                 }
             }
 
-            FreshnessBadge(
-                freshness = state.freshness,
-                age = state.age,
-                updatedAt = state.updatedAt,
-                onClick = { showDetails = true },
+            AmountRow(
+                currency = state.to,
+                text = state.toText,
+                active = state.activeField == Field.TO,
+                onFieldClick = { onFieldSelected(Field.TO) },
+                onCurrencyClick = { pickerFor = Field.TO },
             )
 
-            // La commissione va impostata dove si guarda il risultato, non
-            // sepolta nelle impostazioni: è una scelta che cambia da viaggio a
-            // viaggio, e spesso da carta a carta.
-            AssistChip(
-                onClick = { showMarkup = true },
-                label = {
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
+                // La riga con la commissione sta sopra il tasso e sotto il
+                // risultato: è la cifra che conta davvero per chi sta per pagare.
+                state.withFeeText?.let { withFee ->
                     Text(
-                        if (state.markupPercent.signum() > 0) {
-                            stringResource(
-                                R.string.markup_chip_set,
-                                "${state.markupPercent.stripTrailingZeros().toPlainString()}%",
-                            )
-                        } else {
-                            stringResource(R.string.markup_chip_none)
-                        },
+                        text = stringResource(
+                            R.string.markup_with_fee,
+                            withFee,
+                            "${state.markupPercent.stripTrailingZeros().toPlainString()}%",
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.tertiary,
                     )
-                },
-            )
+                }
 
-            state.error?.let { error ->
-                Text(
-                    text = errorText(error),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error,
-                    textAlign = TextAlign.Center,
+                if (state.rate != null) {
+                    // Il tasso è il punto naturale da cui chiedere "e prima?", ma
+                    // un testo che si può toccare non si distingue da uno che non
+                    // si può: l'icona rende visibile che lì sotto c'è un grafico.
+                    Row(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable(onClick = onOpenHistory)
+                            .semantics(mergeDescendants = true) {
+                                contentDescription = openHistoryLabel
+                            }
+                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                        Text(
+                            text = stringResource(
+                                R.string.convert_rate_line,
+                                state.from.code,
+                                AmountFormat.formatRate(state.rate),
+                                state.to.code,
+                            ),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Icon(
+                            imageVector = Icons.Default.ShowChart,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(18.dp),
+                        )
+                    }
+                }
+
+                FreshnessBadge(
+                    freshness = state.freshness,
+                    age = state.age,
+                    updatedAt = state.updatedAt,
+                    onClick = { showDetails = true },
                 )
+
+                // La commissione va impostata dove si guarda il risultato, non
+                // sepolta nelle impostazioni: è una scelta che cambia da viaggio a
+                // viaggio, e spesso da carta a carta.
+                AssistChip(
+                    onClick = { showMarkup = true },
+                    label = {
+                        Text(
+                            if (state.markupPercent.signum() > 0) {
+                                stringResource(
+                                    R.string.markup_chip_set,
+                                    "${state.markupPercent.stripTrailingZeros().toPlainString()}%",
+                                )
+                            } else {
+                                stringResource(R.string.markup_chip_none)
+                            },
+                        )
+                    },
+                )
+
+                state.error?.let { error ->
+                    Text(
+                        text = errorText(error),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        textAlign = TextAlign.Center,
+                    )
+                }
             }
         }
 
-        Box(Modifier.weight(1f))
-
         MonetaKeypad(
             onKey = onKey,
-            modifier = Modifier.padding(bottom = 12.dp),
+            modifier = Modifier.padding(top = 8.dp, bottom = 12.dp),
+            keyHeight = rememberKeyHeight(),
             // Il tasto decimale mostra il simbolo della lingua dell'utente:
             // virgola in italiano, punto in inglese. Il parser accetta comunque
             // entrambi, ma la tastiera deve dire la cosa giusta.

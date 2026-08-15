@@ -18,8 +18,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /** Tasto premuto. Il testo vero lo compone la schermata: qui si emettono eventi. */
@@ -34,6 +36,28 @@ sealed interface KeypadKey {
     /** Riduce l'espressione al suo risultato. */
     data object Equals : KeypadKey
 }
+
+/**
+ * Quanto tastierino serve.
+ *
+ * Non tutte le schermate chiedono la stessa cosa: nel convertitore si fanno
+ * conti veri — dividere il conto, aggiungere la mancia — mentre nell'elenco
+ * delle valute si scrive solo una cifra e si guarda l'elenco. Dare a entrambe
+ * la stessa tastiera significa rubare mezzo schermo a chi non ne ha bisogno.
+ */
+enum class KeypadLayout { CALCULATOR, NUMERIC }
+
+/**
+ * Altezza dei tasti adatta allo schermo su cui si sta girando.
+ *
+ * Su un telefono corto — o con il testo di sistema ingrandito, che è lo stesso
+ * problema visto da un'altra angolazione — cinque righe da 56dp più i due campi
+ * degli importi non ci stanno. Meglio tasti leggermente più bassi che una riga
+ * di tasti irraggiungibile.
+ */
+@Composable
+fun rememberKeyHeight(): Dp =
+    if (LocalConfiguration.current.screenHeightDp < 700) 48.dp else 56.dp
 
 /**
  * Tastierino del convertitore.
@@ -51,37 +75,59 @@ sealed interface KeypadKey {
 fun MonetaKeypad(
     onKey: (KeypadKey) -> Unit,
     modifier: Modifier = Modifier,
+    layout: KeypadLayout = KeypadLayout.CALCULATOR,
+    keyHeight: Dp = 56.dp,
     decimalSeparator: Char = ',',
     clearLabel: String = "C",
     backspaceDescription: String = "Backspace",
     equalsDescription: String = "=",
 ) {
-    val rows = listOf(
-        listOf(
-            Key.Action(clearLabel, KeypadKey.Clear, KeyKind.MODIFIER),
-            Key.Action("(", KeypadKey.Symbol('('), KeyKind.MODIFIER),
-            Key.Action(")", KeypadKey.Symbol(')'), KeyKind.MODIFIER),
-            Key.Action("÷", KeypadKey.Symbol('÷'), KeyKind.OPERATOR),
-        ),
-        listOf(
-            Key.Digit('7'), Key.Digit('8'), Key.Digit('9'),
-            Key.Action("×", KeypadKey.Symbol('×'), KeyKind.OPERATOR),
-        ),
-        listOf(
-            Key.Digit('4'), Key.Digit('5'), Key.Digit('6'),
-            Key.Action("−", KeypadKey.Symbol('-'), KeyKind.OPERATOR),
-        ),
-        listOf(
-            Key.Digit('1'), Key.Digit('2'), Key.Digit('3'),
-            Key.Action("+", KeypadKey.Symbol('+'), KeyKind.OPERATOR),
-        ),
-        listOf(
-            Key.Action(decimalSeparator.toString(), KeypadKey.Symbol(decimalSeparator), KeyKind.DIGIT),
-            Key.Digit('0'),
-            Key.Icon(KeypadKey.Backspace, backspaceDescription),
-            Key.Action("=", KeypadKey.Equals, KeyKind.PRIMARY, equalsDescription),
-        ),
+    val decimal = Key.Action(
+        decimalSeparator.toString(),
+        KeypadKey.Symbol(decimalSeparator),
+        KeyKind.DIGIT,
     )
+    val backspace = Key.Icon(KeypadKey.Backspace, backspaceDescription)
+    val clear = Key.Action(clearLabel, KeypadKey.Clear, KeyKind.MODIFIER)
+
+    val rows = when (layout) {
+        KeypadLayout.CALCULATOR -> listOf(
+            listOf(
+                clear,
+                Key.Action("(", KeypadKey.Symbol('('), KeyKind.MODIFIER),
+                Key.Action(")", KeypadKey.Symbol(')'), KeyKind.MODIFIER),
+                Key.Action("÷", KeypadKey.Symbol('÷'), KeyKind.OPERATOR),
+            ),
+            listOf(
+                Key.Digit('7'), Key.Digit('8'), Key.Digit('9'),
+                Key.Action("×", KeypadKey.Symbol('×'), KeyKind.OPERATOR),
+            ),
+            listOf(
+                Key.Digit('4'), Key.Digit('5'), Key.Digit('6'),
+                Key.Action("−", KeypadKey.Symbol('-'), KeyKind.OPERATOR),
+            ),
+            listOf(
+                Key.Digit('1'), Key.Digit('2'), Key.Digit('3'),
+                Key.Action("+", KeypadKey.Symbol('+'), KeyKind.OPERATOR),
+            ),
+            listOf(
+                decimal,
+                Key.Digit('0'),
+                backspace,
+                Key.Action("=", KeypadKey.Equals, KeyKind.PRIMARY, equalsDescription),
+            ),
+        )
+
+        // Tre colonne come su un tastierino telefonico, senza operatori: si
+        // digita un importo e basta. Una riga in meno e tasti più bassi
+        // liberano un terzo dello schermo per l'elenco delle valute.
+        KeypadLayout.NUMERIC -> listOf(
+            listOf(Key.Digit('7'), Key.Digit('8'), Key.Digit('9')),
+            listOf(Key.Digit('4'), Key.Digit('5'), Key.Digit('6')),
+            listOf(Key.Digit('1'), Key.Digit('2'), Key.Digit('3')),
+            listOf(decimal, Key.Digit('0'), backspace),
+        )
+    }
 
     Column(
         modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp),
@@ -96,6 +142,7 @@ fun MonetaKeypad(
                     KeyButton(
                         key = key,
                         onKey = onKey,
+                        height = keyHeight,
                         modifier = Modifier.weight(1f),
                     )
                 }
@@ -131,6 +178,7 @@ private sealed interface Key {
 private fun KeyButton(
     key: Key,
     onKey: (KeypadKey) -> Unit,
+    height: Dp,
     modifier: Modifier = Modifier,
 ) {
     val colors = MaterialTheme.colorScheme
@@ -155,9 +203,11 @@ private fun KeyButton(
     Surface(
         onClick = { onKey(key.event) },
         modifier = modifier
-            // 56dp è il minimo perché resti centrabile senza guardare; con lo
-            // schermo al sole e una mano sola, tasti più piccoli si sbagliano.
-            .height(56.dp)
+            // 56dp è la misura di riferimento: sotto, con lo schermo al sole e
+            // una mano sola, i tasti si sbagliano. Su schermi bassi si scende a
+            // 48dp, che resta sopra il minimo tattile raccomandato — meglio un
+            // tasto un po' più basso che una riga di tasti fuori dallo schermo.
+            .height(height)
             .semantics { contentDescription = description },
         shape = RoundedCornerShape(16.dp),
         color = container,

@@ -2,6 +2,7 @@ package it.bbnss.moneta.ui.history
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -22,6 +24,8 @@ import it.bbnss.moneta.core.providers.FailureReason
 import it.bbnss.moneta.core.model.AmountFormat
 import it.bbnss.moneta.core.model.HistoryRange
 import java.math.BigDecimal
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 @Composable
 fun HistoryScreen(
@@ -33,15 +37,20 @@ fun HistoryScreen(
         modifier = modifier.fillMaxSize().padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Row(
+        // Sei filtri non entrano in una riga su uno schermo stretto: una `Row`
+        // schiacciava l'ultimo fino a scriverne l'etichetta una lettera per
+        // riga. Andando a capo restano tutti leggibili e raggiungibili, senza
+        // scorrimenti orizzontali nascosti.
+        FlowRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             HistoryRange.entries.forEach { range ->
                 FilterChip(
                     selected = range == state.range,
                     onClick = { onRangeSelected(range) },
-                    label = { Text(labelOf(range)) },
+                    label = { Text(labelOf(range), maxLines = 1) },
                 )
             }
         }
@@ -103,9 +112,39 @@ fun HistoryScreen(
                     Statistic(stringResource(R.string.history_latest), state.latest)
                     Statistic(stringResource(R.string.history_high), state.high)
                 }
+
+                // Da dove arrivano questi numeri, e fin dove arrivano davvero.
+                // Il periodo mostrato non coincide sempre con quello chiesto:
+                // una fonte può non avere storico così indietro, e vederlo
+                // scritto evita di leggere "5 anni" su una curva di due.
+                SourceLine(state)
             }
         }
     }
+}
+
+@Composable
+private fun SourceLine(state: HistoryUiState) {
+    val provider = state.provider ?: return
+    val first = state.firstDate ?: return
+    val last = state.lastDate ?: return
+
+    val formatter = remember {
+        DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+    }
+
+    Text(
+        text = stringResource(
+            R.string.history_source,
+            provider.displayName,
+            formatter.format(first),
+            formatter.format(last),
+        ),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.fillMaxWidth(),
+    )
 }
 
 @Composable

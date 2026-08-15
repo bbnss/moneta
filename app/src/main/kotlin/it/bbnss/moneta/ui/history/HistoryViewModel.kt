@@ -9,6 +9,7 @@ import it.bbnss.moneta.core.data.SettingsStore
 import it.bbnss.moneta.core.model.Currency
 import it.bbnss.moneta.core.model.HistoryRange
 import it.bbnss.moneta.core.model.MonetaryMath
+import it.bbnss.moneta.core.model.ProviderId
 import it.bbnss.moneta.core.model.RatePoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.time.LocalDate
 
 data class HistoryUiState(
     val base: Currency = Currency.EUR,
@@ -27,9 +29,21 @@ data class HistoryUiState(
     val range: HistoryRange = HistoryRange.SIX_MONTHS,
     val points: List<RatePoint> = emptyList(),
     val loading: Boolean = true,
+    /**
+     * Chi ha pubblicato questi numeri.
+     *
+     * Un grafico senza fonte è un'affermazione senza autore: fonti diverse
+     * danno curve diverse per la stessa coppia, e la fonte che ha risposto qui
+     * può non essere quella scelta nelle impostazioni — la catena di ricaduta
+     * può aver preso un'altra strada.
+     */
+    val provider: ProviderId? = null,
     /** Perché il grafico è vuoto, quando lo è. */
     val emptyReason: SeriesResult? = null,
 ) {
+    val firstDate: LocalDate? get() = points.firstOrNull()?.date
+    val lastDate: LocalDate? get() = points.lastOrNull()?.date
+
     val low: BigDecimal? get() = points.minOfOrNull { it.rate }
     val high: BigDecimal? get() = points.maxOfOrNull { it.rate }
     val latest: BigDecimal? get() = points.lastOrNull()?.rate
@@ -73,13 +87,15 @@ class HistoryViewModel(
                     ),
                 )
                 val result = repository.series(base, quote, selected)
+                val series = (result as? SeriesResult.Available)?.series
                 emit(
                     HistoryUiState(
                         base = base,
                         quote = quote,
                         range = selected,
-                        points = (result as? SeriesResult.Available)?.series?.points.orEmpty(),
+                        points = series?.points.orEmpty(),
                         loading = false,
+                        provider = series?.provider,
                         emptyReason = result.takeIf { it !is SeriesResult.Available },
                     ),
                 )

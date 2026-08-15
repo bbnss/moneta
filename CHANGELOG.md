@@ -6,6 +6,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] — honesty fixes
+
+### Fixed
+
+- **An update with no network no longer counts as an update.** In flight mode, refreshing
+  reported success and stamped a fresh time on stale rates: the HTTP cache was answering
+  from disk without ever reaching the source, and a cached 200 is indistinguishable from a
+  real one. Requests now force revalidation, and a response that never touched the network
+  is treated as the network failure it is. The rate age is the one claim this app cannot
+  get wrong.
+- **The last row of the keypad can no longer be pushed off screen.** Turning on the card fee
+  added a line and cost the zero, the decimal separator and the equals key. The keypad is
+  now measured first and everything above it scrolls; on short screens the keys step down
+  from 56dp to 48dp rather than disappearing.
+- **"Max" showed six months.** After viewing a shorter range, the cached series was judged
+  sufficient by looking only at its most recent point, so a twenty-year chart was served
+  from six months of data. Cached series must now cover both ends of the requested range.
+- **The range filters no longer get crushed.** Six chips on one row squeezed the last one
+  until its label read one letter per line. They wrap now.
+
+### Changed
+
+- **The chart states its source** and the period actually covered, which is not always the
+  period requested — not every source has history that far back.
+- **The currencies board gets its screen back.** The calculator keypad has been replaced
+  there by a three-column numeric pad, one row shorter, that can also be collapsed: on that
+  screen you type an amount, you do not do arithmetic.
+- **New app icon**, drawn from the denarius of Juno Moneta, on a dark slate ground so the
+  silver reads as metal. The previous vector drawing stays as the monochrome layer for
+  Android 13 themed icons.
+
 ## [0.1.0] — first release
 
 ### Added
@@ -48,5 +79,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rounding happens only when formatting for display, following each currency's ISO 4217
   minor units.
 
-[Unreleased]: https://github.com/bbnss/moneta/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/bbnss/moneta/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/bbnss/moneta/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/bbnss/moneta/releases/tag/v0.1.0

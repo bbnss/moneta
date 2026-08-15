@@ -14,8 +14,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +45,7 @@ import it.bbnss.moneta.R
 import it.bbnss.moneta.core.model.Currency
 import it.bbnss.moneta.core.model.CurrencyMetadata
 import it.bbnss.moneta.core.ui.components.KeypadKey
+import it.bbnss.moneta.core.ui.components.KeypadLayout
 import it.bbnss.moneta.core.ui.components.MonetaKeypad
 import it.bbnss.moneta.ui.components.CurrencyPickerSheet
 import it.bbnss.moneta.ui.components.FreshnessBadge
@@ -54,12 +60,19 @@ fun BoardScreen(
     modifier: Modifier = Modifier,
 ) {
     var showPicker by remember { mutableStateOf(false) }
+    var showKeypad by rememberSaveable { mutableStateOf(true) }
 
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        BaseAmountRow(currency = state.base, text = state.inputText)
+        BaseAmountRow(
+            currency = state.base,
+            text = state.inputText,
+            keypadVisible = showKeypad,
+            onToggleKeypad = { showKeypad = !showKeypad },
+            onClear = { onKey(KeypadKey.Clear) },
+        )
 
         if (!state.hasFavourites) {
             EmptyState(Modifier.weight(1f), onAdd = { showPicker = true })
@@ -114,16 +127,24 @@ fun BoardScreen(
             modifier = Modifier.padding(horizontal = 16.dp),
         )
 
-        MonetaKeypad(
-            onKey = onKey,
-            modifier = Modifier.padding(bottom = 12.dp),
-            decimalSeparator = DecimalFormatSymbols
-                .getInstance(LocalConfiguration.current.locales[0])
-                .decimalSeparator,
-            clearLabel = stringResource(R.string.keypad_clear),
-            backspaceDescription = stringResource(R.string.keypad_backspace),
-            equalsDescription = stringResource(R.string.keypad_equals),
-        )
+        // Qui non si fanno conti: si scrive un importo e si guarda l'elenco.
+        // Il tastierino da calcolatrice rubava metà schermo alle valute, che
+        // sono il motivo per cui si apre questa schermata; questo ha tre
+        // colonne, una riga in meno e si può chiudere del tutto.
+        if (showKeypad) {
+            MonetaKeypad(
+                onKey = onKey,
+                modifier = Modifier.padding(bottom = 12.dp),
+                layout = KeypadLayout.NUMERIC,
+                keyHeight = 48.dp,
+                decimalSeparator = DecimalFormatSymbols
+                    .getInstance(LocalConfiguration.current.locales[0])
+                    .decimalSeparator,
+                clearLabel = stringResource(R.string.keypad_clear),
+                backspaceDescription = stringResource(R.string.keypad_backspace),
+                equalsDescription = stringResource(R.string.keypad_equals),
+            )
+        }
     }
 
     if (showPicker) {
@@ -143,7 +164,13 @@ fun BoardScreen(
 }
 
 @Composable
-private fun BaseAmountRow(currency: Currency, text: String) {
+private fun BaseAmountRow(
+    currency: Currency,
+    text: String,
+    keypadVisible: Boolean,
+    onToggleKeypad: () -> Unit,
+    onClear: () -> Unit,
+) {
     val colors = MaterialTheme.colorScheme
 
     Surface(
@@ -153,9 +180,9 @@ private fun BaseAmountRow(currency: Currency, text: String) {
         contentColor = colors.onPrimaryContainer,
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+            modifier = Modifier.padding(start = 16.dp, end = 4.dp, top = 6.dp, bottom = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             CurrencyMetadata.flagOf(currency)?.let { flag ->
                 Text(flag, style = MaterialTheme.typography.titleLarge)
@@ -172,6 +199,30 @@ private fun BaseAmountRow(currency: Currency, text: String) {
                 maxLines = 1,
                 modifier = Modifier.weight(1f),
             )
+
+            // Azzerare è l'operazione più frequente qui: si arriva con un
+            // importo vecchio e se ne vuole scrivere uno nuovo.
+            if (text.isNotEmpty()) {
+                IconButton(onClick = onClear) {
+                    Icon(
+                        Icons.Default.Clear,
+                        contentDescription = stringResource(R.string.board_clear_amount),
+                    )
+                }
+            }
+
+            IconButton(onClick = onToggleKeypad) {
+                Icon(
+                    imageVector = if (keypadVisible) {
+                        Icons.Default.KeyboardArrowDown
+                    } else {
+                        Icons.Default.KeyboardArrowUp
+                    },
+                    contentDescription = stringResource(
+                        if (keypadVisible) R.string.board_hide_keypad else R.string.board_show_keypad,
+                    ),
+                )
+            }
         }
     }
 }
