@@ -11,7 +11,10 @@ captures/
 *.apk
 *.aab
 *.keystore
+*.jks
 !debug.keystore
+keystore.properties
+dist/
 
 # Cloni dei progetti competitor, tenuti solo per consultazione locale
 reference/

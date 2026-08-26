@@ -1,8 +1,18 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
+
+// La chiave di upload di Play non sta nel repository: percorso e password vivono
+// in keystore.properties, accanto al progetto. Se il file non c'è la release esce
+// non firmata invece di far fallire il build — un clone, e F-Droid, devono poter
+// compilare senza avere la chiave.
+val keystoreProps: Properties? = rootProject.file("keystore.properties")
+    .takeIf { it.exists() }
+    ?.let { f -> Properties().apply { f.inputStream().use { load(it) } } }
 
 android {
     namespace = "it.bbnss.moneta"
@@ -25,8 +35,22 @@ android {
         includeInBundle = false
     }
 
+    signingConfigs {
+        keystoreProps?.let { props ->
+            create("release") {
+                storeFile = rootProject.file(props.getProperty("storeFile"))
+                storePassword = props.getProperty("storePassword")
+                keyAlias = props.getProperty("keyAlias")
+                keyPassword = props.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            // findByName e non getByName: senza keystore.properties la config non esiste.
+            signingConfig = signingConfigs.findByName("release")
+
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
