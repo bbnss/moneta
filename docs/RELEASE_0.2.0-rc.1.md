@@ -1,6 +1,6 @@
 # Moneta 0.2.0 — prova firmata rc.1
 
-Versione Android `0.2.0`, codice `4`, pacchetto `it.bbnss.moneta`. APK e AAB sono prodotti dallo stesso commit con shrinking attivo e firmati con `moneta-upload-key.jks`. Il keystore e le password restano esclusi dal repository e dagli allegati.
+Versione Android `0.2.0`, codice `4`, pacchetto `it.bbnss.moneta`. L’APK è prodotto con shrinking attivo e firmato con il keystore esistente `moneta-upload-key.jks`. Su GitHub è disponibile l’APK per la prova; l’AAB dello stesso commit è conservato localmente per il successivo caricamento su Play, dopo l’approvazione. Il keystore e le password restano esclusi dal repository e dagli allegati.
 
 ## Novità
 
@@ -14,7 +14,7 @@ Versione Android `0.2.0`, codice `4`, pacchetto `it.bbnss.moneta`. APK e AAB son
 
 ## Installazione e firma
 
-Scarica l’APK e `SHA256SUMS.txt` dalla prerelease. Verifica con `shasum -a 256 -c SHA256SUMS.txt` nella cartella contenente i due file di build, oppure confronta la riga dell’APK. Consenti l’installazione dalla fonte usata per scaricarlo e apri il file APK.
+Scarica l’APK e `SHA256SUMS.txt` dalla prerelease. Verifica con `shasum -a 256 -c SHA256SUMS.txt` nella cartella contenente l’APK e il file dei checksum. Consenti l’installazione dalla fonte usata per scaricarlo e apri il file APK.
 
 Il certificato SHA-256 di questa build è:
 
@@ -24,7 +24,7 @@ Il vecchio `moneta-0.1.1-test.apk` pubblicato su GitHub è firmato con Android D
 
 `50ebbcabee5e06a2de08935519043f4a25a35fcf8cc0a4747ce89e2f6e11bf30`
 
-Le due firme non sono compatibili: questa build non può aggiornare direttamente quel vecchio APK. Se è installato, la prova richiede disinstallazione e nuova installazione; la disinstallazione elimina cache, preferiti e impostazioni. Annota ciò che vuoi ripristinare prima di procedere. La migrazione Room conserva i dati solo quando l’aggiornamento è consentito dalla firma. Per installazioni provenienti da Play la compatibilità dipende dalla chiave di firma dell’app gestita da Play, distinta dalla chiave di upload: non è stata verificata qui. [Firma Android](https://developer.android.com/studio/publish/app-signing).
+Le due firme non sono compatibili: questa build non può aggiornare direttamente quel vecchio APK. Se è installato, la prova richiede disinstallazione e nuova installazione; la disinstallazione elimina cache, preferiti e impostazioni. Annota ciò che vuoi ripristinare prima di procedere. La migrazione Room conserva i dati solo quando l’aggiornamento è consentito dalla firma. Il certificato di questo APK coincide con quello del precedente AAB locale `Moneta-0.1.1-3.aab` preparato per Play. La chiave di upload e la chiave di firma dell’app su Play possono coincidere; non è stato modificato alcun keystore né effettuato un caricamento su Play. Se l’app distribuita da Play è firmata con questo stesso certificato, l’APK può aggiornarla quando il codice versione installato è inferiore. Il certificato dell’APK effettivamente distribuito da Play non è stato confrontato qui; il precedente AAB conferma la continuità della firma del bundle. [Firma Android](https://developer.android.com/studio/publish/app-signing).
 
 ## Prova consigliata
 

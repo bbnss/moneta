@@ -8,7 +8,7 @@
 
 **Risultato atteso.** Un'app Android che al primo avvio funziona già offline, che non mostra mai un tasso senza dire quanto è vecchio e da chi arriva, che sopravvive alla morte di qualunque singolo provider, e che parla la lingua di chi viaggia.
 
-**Stato di partenza.** `/Users/bbnss/kDrive2/app/moneta` è vuota. Si parte da zero, nessun vincolo di codice esistente.
+**Stato di partenza.** La cartella del progetto è vuota. Si parte da zero, nessun vincolo di codice esistente.
 
 ---
 
