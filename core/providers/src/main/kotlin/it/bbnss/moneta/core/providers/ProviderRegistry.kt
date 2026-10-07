@@ -60,6 +60,7 @@ class ProviderRegistry internal constructor(val all: List<RateProvider>) {
         val ordered = LinkedHashSet<ProviderId>()
         ordered.add(preferred)
         ordered.addAll(DEFAULT_ORDER)
+        ordered.add(ProviderId.CUSTOM)
         return ordered.mapNotNull { byId[it] }
     }
 

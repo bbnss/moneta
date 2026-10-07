@@ -90,11 +90,13 @@ class FrankfurterProvider(
 
                 val rates = mutableMapOf<Currency, BigDecimal>()
                 var latestDate: LocalDate? = null
+                val dates = mutableMapOf<Currency, LocalDate>()
 
                 for (element in rows) {
                     val row = element as? JsonObject ?: continue
                     val quote = Currency.parse(row["quote"]?.asStringOrNull()) ?: continue
                     val rate = row["rate"]?.asBigDecimalOrNull() ?: continue
+                    if (rate.signum() <= 0) continue
                     rates[quote] = rate
 
                     // Ogni riga porta la propria data: le fonti non pubblicano
@@ -102,6 +104,7 @@ class FrankfurterProvider(
                     // essere ferma a due giorni prima. Come data dello snapshot
                     // teniamo la più recente e la mostriamo come "tassi al ...".
                     val date = row["date"]?.asStringOrNull()?.toLocalDateOrNull()
+                    if (date != null) dates[quote] = date
                     if (date != null && (latestDate == null || date.isAfter(latestDate))) {
                         latestDate = date
                     }
@@ -114,6 +117,7 @@ class FrankfurterProvider(
                     pivot = PIVOT,
                     rates = rates,
                     rateDate = latestDate,
+                    rateDates = dates,
                     fetchedAt = clock.instant(),
                 )
             }

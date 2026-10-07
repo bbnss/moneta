@@ -58,6 +58,11 @@ class SeedLoader(private val context: Context) {
             pivot = pivot,
             rates = rates,
             rateDate = rateDate,
+            rateDates = (root["rateDates"] as? JsonObject)?.mapNotNull { (code, element) ->
+                val currency = Currency.parse(code) ?: return@mapNotNull null
+                val date = (element as? JsonPrimitive)?.content?.let { LocalDate.parse(it) } ?: return@mapNotNull null
+                currency to date
+            }?.toMap().orEmpty(),
             // Non "adesso": l'età dichiarata è quella vera del file.
             fetchedAt = generatedAt,
         )

@@ -29,6 +29,7 @@ data class SnapshotEntity(
     val rateDate: String,
     /** Quando l'abbiamo scaricato noi, epoch in millisecondi. */
     val fetchedAt: Long,
+    val endpoint: String? = null,
 )
 
 /**
@@ -56,6 +57,7 @@ data class RateEntity(
     val providerId: Int,
     val currency: String,
     val value: String,
+    val rateDate: String? = null,
 )
 
 /** Punto di una serie storica, in cache per consultare il grafico da offline. */
@@ -91,6 +93,16 @@ interface RateDao {
     @Transaction
     @Query("SELECT * FROM snapshot ORDER BY fetchedAt DESC LIMIT 1")
     fun observeMostRecent(): Flow<SnapshotWithRates?>
+
+    @Transaction
+    @Query("SELECT * FROM snapshot ORDER BY fetchedAt DESC")
+    fun observeAll(): Flow<List<SnapshotWithRates>>
+
+    @Query("DELETE FROM snapshot WHERE providerId = :providerId")
+    suspend fun deleteSnapshot(providerId: Int)
+
+    @Query("DELETE FROM series_point WHERE providerId = :providerId")
+    suspend fun deleteSeries(providerId: Int)
 
     @Transaction
     @Query("SELECT * FROM snapshot WHERE providerId = :providerId")
@@ -137,13 +149,19 @@ interface RateDao {
 
 @Database(
     entities = [SnapshotEntity::class, RateEntity::class, SeriesPointEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 abstract class MonetaDatabase : RoomDatabase() {
     abstract fun rateDao(): RateDao
 
     companion object {
+        val MIGRATION_1_2 = object : androidx.room.migration.Migration(1, 2) {
+            override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE rate ADD COLUMN rateDate TEXT")
+                db.execSQL("ALTER TABLE snapshot ADD COLUMN endpoint TEXT")
+            }
+        }
         const val NAME = "moneta.db"
     }
 }

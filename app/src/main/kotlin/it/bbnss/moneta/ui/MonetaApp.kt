@@ -1,6 +1,15 @@
 package it.bbnss.moneta.ui
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.semantics.Role
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,8 +24,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -111,6 +118,21 @@ fun MonetaApp(container: DataContainer) {
         currentRoute?.hierarchy?.any { it.route == destination.route } == true
     } ?: Destination.CONVERT
 
+    val refreshText = when (val message = convertState.message) {
+        is it.bbnss.moneta.ui.convert.RefreshMessage.Updated -> stringResource(R.string.refresh_updated, message.provider.displayName)
+        it.bbnss.moneta.ui.convert.RefreshMessage.Failed -> stringResource(R.string.refresh_failed)
+        it.bbnss.moneta.ui.convert.RefreshMessage.Offline -> stringResource(R.string.refresh_offline)
+        it.bbnss.moneta.ui.convert.RefreshMessage.Wifi -> stringResource(R.string.refresh_wifi)
+        it.bbnss.moneta.ui.convert.RefreshMessage.InvalidPaste -> stringResource(R.string.amount_invalid)
+        null -> null
+    }
+    LaunchedEffect(convertState.message, current) {
+        if (current != Destination.CONVERT && refreshText != null) {
+            snackbarHostState.showSnackbar(refreshText)
+            convertViewModel.onMessageShown()
+        }
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -156,7 +178,14 @@ fun MonetaApp(container: DataContainer) {
                     // preferenze: il pulsante resta dove serve.
                     if (!onSettings) {
                     IconButton(
-                        onClick = convertViewModel::onRefresh,
+                        onClick = {
+                            val required = when (current) {
+                                Destination.BOARD -> boardViewModel.requestedCurrencies()
+                                Destination.RATE_CARD -> rateCardViewModel.requestedCurrencies()
+                                else -> setOf(convertState.from, convertState.to)
+                            }
+                            convertViewModel.onRefresh(required)
+                        },
                         enabled = !convertState.refreshing,
                     ) {
                         if (convertState.refreshing) {
@@ -180,29 +209,28 @@ fun MonetaApp(container: DataContainer) {
             // lascerebbe evidenziata una sezione in cui non ci si trova più.
             if (onDetail) return@Scaffold
 
-            NavigationBar {
-                Destination.entries.forEach { destination ->
-                    NavigationBarItem(
-                        selected = destination == current,
-                        onClick = {
-                            if (destination != current) {
-                                navController.navigate(destination.route) {
-                                    // Le destinazioni sono pari grado: si torna
-                                    // alla radice conservando lo stato di
-                                    // ciascuna, senza accumulare storico.
-                                    // `inclusive` qui svuoterebbe lo stack e
-                                    // lascerebbe la schermata bianca.
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
+            Surface {
+                Row(Modifier.fillMaxWidth().navigationBarsPadding().height(64.dp)) {
+                    Destination.entries.forEach { destination ->
+                        Column(Modifier.weight(1f).fillMaxHeight().selectable(
+                            selected = destination == current, role = Role.Tab,
+                            onClick = {
+                                if (destination != current) navController.navigate(destination.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
                                     launchSingleTop = true
                                     restoreState = true
                                 }
+                            }), horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center) {
+                            Box(Modifier.size(48.dp, 26.dp).background(
+                                if (destination == current) MaterialTheme.colorScheme.secondaryContainer
+                                else MaterialTheme.colorScheme.surface, RoundedCornerShape(14.dp)),
+                                contentAlignment = Alignment.Center) {
+                                Icon(destination.icon, null, Modifier.size(20.dp))
                             }
-                        },
-                        icon = { Icon(destination.icon, contentDescription = null) },
-                        label = { Text(stringResource(destination.label)) },
-                    )
+                            Text(stringResource(destination.label), style = MaterialTheme.typography.labelSmall)
+                        }
+                    }
                 }
             }
         },
@@ -226,6 +254,8 @@ fun MonetaApp(container: DataContainer) {
                     onDismissSuggestion = convertViewModel::onDismissSuggestion,
                     onOpenHistory = { navController.navigate(HISTORY_ROUTE) },
                     onMarkupChanged = convertViewModel::onMarkupChanged,
+                    onFeeModeChanged = convertViewModel::onFeeModeChanged,
+                    onPaste = convertViewModel::onPaste,
                 )
             }
 
@@ -233,6 +263,7 @@ fun MonetaApp(container: DataContainer) {
                 val settingsViewModel: SettingsViewModel = viewModel(
                     factory = SettingsViewModel.Factory(
                         settings = container.settings,
+                        repository = container.rateRepository,
                         providers = container.providerCatalog,
                         onSyncSettingsChanged = { hours, wifiOnly ->
                             RefreshWorker.schedule(context, hours, wifiOnly)
@@ -245,6 +276,7 @@ fun MonetaApp(container: DataContainer) {
                     onProviderSelected = settingsViewModel::onProviderSelected,
                     onFailoverChanged = settingsViewModel::onFailoverChanged,
                     onCustomEndpointChanged = settingsViewModel::onCustomEndpointChanged,
+                    onVerifyEndpoint = settingsViewModel::onVerifyEndpoint,
                     onIntervalChanged = settingsViewModel::onIntervalChanged,
                     onWifiOnlyChanged = settingsViewModel::onWifiOnlyChanged,
                     onOfflineModeChanged = settingsViewModel::onOfflineModeChanged,
@@ -274,12 +306,16 @@ fun MonetaApp(container: DataContainer) {
                     onKey = boardViewModel::onKey,
                     onSetAsBase = boardViewModel::onSetAsBase,
                     onToggleFavourite = boardViewModel::onToggleFavourite,
+                    onMove = boardViewModel::onMove,
+                    onPaste = boardViewModel::onPaste,
                 )
             }
 
             composable(Destination.RATE_CARD.route) {
                 val state by rateCardViewModel.state.collectAsStateWithLifecycle()
-                RateCardScreen(state = state)
+                RateCardScreen(state = state, onCurrencySelected = rateCardViewModel::onCurrencySelected,
+                    onSwap = rateCardViewModel::onSwap, onCount = rateCardViewModel::onCount,
+                    onReset = rateCardViewModel::onReset, onToggleFavourite = rateCardViewModel::onToggleFavourite)
             }
         }
     }

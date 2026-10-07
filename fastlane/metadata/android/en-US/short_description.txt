@@ -1,1 +1,1 @@
-Currency converter that works offline and never hides how old the rates are
+Offline currency converter, banknote counter, no ads

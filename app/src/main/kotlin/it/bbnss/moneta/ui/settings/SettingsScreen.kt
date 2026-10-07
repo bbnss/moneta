@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -47,6 +48,7 @@ fun SettingsScreen(
     onProviderSelected: (ProviderId) -> Unit,
     onFailoverChanged: (Boolean) -> Unit,
     onCustomEndpointChanged: (String) -> Unit,
+    onVerifyEndpoint: (String) -> Unit,
     onIntervalChanged: (Int) -> Unit,
     onWifiOnlyChanged: (Boolean) -> Unit,
     onOfflineModeChanged: (Boolean) -> Unit,
@@ -83,6 +85,9 @@ fun SettingsScreen(
         CustomEndpointField(
             value = state.customEndpoint,
             onValueChange = onCustomEndpointChanged,
+            onVerify = onVerifyEndpoint,
+            result = state.endpointResult,
+            verifying = state.verifying,
         )
 
         HorizontalDivider(Modifier.padding(vertical = 8.dp))
@@ -221,7 +226,7 @@ private fun ProviderRow(
         Column(Modifier.padding(start = 8.dp)) {
             Text(option.displayName, style = MaterialTheme.typography.bodyLarge)
             Text(
-                text = "$currencies · $cadence",
+                text = if (option.id == ProviderId.CUSTOM) option.infoUrl else "$currencies · $cadence",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -291,39 +296,31 @@ private fun LinkRow(title: String, subtitle: String?, onClick: () -> Unit) {
 }
 
 @Composable
-private fun CustomEndpointField(value: String, onValueChange: (String) -> Unit) {
+private fun CustomEndpointField(value: String, onValueChange: (String) -> Unit, onVerify: (String) -> Unit,
+                                result: EndpointResult?, verifying: Boolean) {
     var text by remember(value) { mutableStateOf(value) }
-    val invalid = text.isNotBlank() && !text.startsWith("http://") && !text.startsWith("https://")
-
+    val valid = text.isBlank() || it.bbnss.moneta.core.model.CustomEndpoint.normalize(text) != null
     Column(Modifier.padding(vertical = 8.dp)) {
-        OutlinedTextField(
-            value = text,
-            onValueChange = { updated ->
-                text = updated
-                // Si salva solo ciò che è utilizzabile: un indirizzo a metà
-                // digitazione non deve sostituire la fonte funzionante.
-                if (updated.isBlank() || updated.startsWith("http")) onValueChange(updated)
-            },
-            singleLine = true,
-            isError = invalid,
-            label = { Text(stringResource(R.string.settings_custom_endpoint)) },
-            placeholder = { Text("https://frankfurter.example.org") },
-            modifier = Modifier.fillMaxWidth(),
-        )
-        Text(
-            text = if (invalid) {
-                stringResource(R.string.settings_custom_endpoint_invalid)
-            } else {
-                stringResource(R.string.settings_custom_endpoint_explain)
-            },
-            style = MaterialTheme.typography.bodySmall,
-            color = if (invalid) {
-                MaterialTheme.colorScheme.error
-            } else {
-                MaterialTheme.colorScheme.onSurfaceVariant
-            },
-            modifier = Modifier.padding(top = 4.dp),
-        )
+        OutlinedTextField(value = text, onValueChange = { text = it }, singleLine = true,
+            isError = !valid, label = { Text(stringResource(R.string.settings_custom_endpoint)) },
+            placeholder = { Text("https://example.org/frankfurter") }, modifier = Modifier.fillMaxWidth())
+        Text(stringResource(if (valid) R.string.settings_custom_endpoint_explain else R.string.settings_custom_endpoint_invalid),
+            style = MaterialTheme.typography.bodySmall)
+        Row {
+            TextButton(onClick = { onValueChange(text) }, enabled = valid && !verifying) { Text(stringResource(R.string.markup_save)) }
+            TextButton(onClick = { onVerify(text) }, enabled = valid && text.isNotBlank() && !verifying) {
+                Text(stringResource(if (verifying) R.string.endpoint_verifying else R.string.endpoint_verify))
+            }
+        }
+        result?.let {
+            Text(if (it.coverage != null) stringResource(R.string.endpoint_coverage, it.coverage) else
+                stringResource(R.string.endpoint_error, when (it.message) {
+                    "OFFLINE" -> stringResource(R.string.refresh_offline)
+                    "WIFI" -> stringResource(R.string.refresh_wifi)
+                    "DISCONNECTED" -> stringResource(R.string.refresh_failed)
+                    else -> it.message.orEmpty()
+                }), style = MaterialTheme.typography.bodySmall)
+        }
     }
 }
 

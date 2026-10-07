@@ -4,6 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import it.bbnss.moneta.core.data.SettingsStore
+import it.bbnss.moneta.core.data.RateRepository
+import it.bbnss.moneta.core.model.CustomEndpoint
+import it.bbnss.moneta.core.providers.ProviderResult
+import kotlinx.coroutines.flow.MutableStateFlow
 import it.bbnss.moneta.core.model.ProviderId
 import it.bbnss.moneta.core.model.ThemeMode
 import it.bbnss.moneta.core.providers.ProviderCapabilities
@@ -32,14 +36,21 @@ data class SettingsUiState(
     val offlineMode: Boolean = false,
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val dynamicColor: Boolean = true,
+    val endpointResult: EndpointResult? = null,
+    val verifying: Boolean = false,
 )
+
+data class EndpointResult(val coverage: Int? = null, val message: String? = null)
 
 class SettingsViewModel(
     private val settings: SettingsStore,
+    private val repository: RateRepository,
     providers: List<RateProvider>,
     private val onSyncSettingsChanged: (intervalHours: Int, wifiOnly: Boolean) -> Unit,
 ) : ViewModel() {
 
+    private val endpointResult = MutableStateFlow<EndpointResult?>(null)
+    private val verifying = MutableStateFlow(false)
     private val options = providers.map {
         ProviderOption(it.id, it.displayName, it.infoUrl, it.capabilities)
     }
@@ -65,9 +76,13 @@ class SettingsViewModel(
         source,
         updates,
         appearance,
-    ) { (provider, failover, endpoint), (interval, wifi, offline), (theme, dynamic) ->
+        combine(endpointResult, verifying) { result, busy -> result to busy },
+    ) { (provider, failover, endpoint), (interval, wifi, offline), (theme, dynamic), (verification, busy) ->
         SettingsUiState(
-            providers = options,
+            providers = options + if (endpoint.isNotBlank()) listOf(ProviderOption(ProviderId.CUSTOM, ProviderId.CUSTOM.displayName,
+                endpoint, it.bbnss.moneta.core.providers.ProviderCapabilities(0, it.bbnss.moneta.core.providers.UpdateCadence.DAILY_BUSINESS, historical = true, timeSeries = true))) else emptyList(),
+            endpointResult = verification,
+            verifying = busy,
             selectedProvider = provider,
             allowFailover = failover,
             customEndpoint = endpoint,
@@ -92,7 +107,23 @@ class SettingsViewModel(
     }
 
     fun onCustomEndpointChanged(url: String) {
-        viewModelScope.launch { settings.setCustomEndpoint(url) }
+        viewModelScope.launch {
+            if (url.isNotBlank() && CustomEndpoint.normalize(url) == null) return@launch
+            repository.saveEndpoint(url)
+            endpointResult.value = null
+        }
+    }
+
+    fun onVerifyEndpoint(url: String) {
+        if (verifying.value) return
+        viewModelScope.launch {
+            verifying.value = true
+            endpointResult.value = when (val result = repository.verifyEndpoint(url)) {
+                is ProviderResult.Success -> EndpointResult(coverage = result.value.currencies.size)
+                is ProviderResult.Failure -> EndpointResult(message = result.message ?: result.reason.name)
+            }
+            verifying.value = false
+        }
     }
 
     /**
@@ -128,11 +159,12 @@ class SettingsViewModel(
 
     class Factory(
         private val settings: SettingsStore,
+        private val repository: RateRepository,
         private val providers: List<RateProvider>,
         private val onSyncSettingsChanged: (Int, Boolean) -> Unit,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            SettingsViewModel(settings, providers, onSyncSettingsChanged) as T
+            SettingsViewModel(settings, repository, providers, onSyncSettingsChanged) as T
     }
 }

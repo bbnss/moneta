@@ -22,8 +22,8 @@ object MonetaryMath {
     val CONTEXT: MathContext = MathContext(16, RoundingMode.HALF_UP)
 
     /**
-     * Arrotonda per la visualizzazione. È l'**unico** punto in cui si arrotonda:
-     * arrotondare a metà calcolo propaga l'errore.
+     * Arrotonda per la visualizzazione. I passaggi intermedi usano CONTEXT:
+     * 16 cifre significative con HALF_UP, senza conversione in virgola mobile.
      */
     fun forDisplay(value: BigDecimal, minorUnits: Int): BigDecimal =
         value.setScale(minorUnits, RoundingMode.HALF_UP)

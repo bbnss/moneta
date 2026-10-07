@@ -1,32 +1,28 @@
-Moneta risponde a "quanto sono 45.000 dong in euro?" in due secondi — in aereo, in un mercato senza campo, o in un paese dove metà internet è irraggiungibile.
+Moneta è un convertitore di valute per chi viaggia, con tassi offline, conta-banconote e nessuna pubblicità.
 
-Quasi tutte le app di cambio falliscono su almeno uno di questi punti. Moneta è costruita attorno a tutti e tre.
+<b>Funziona offline, anche al primo avvio</b>
+L’app include tassi di riferimento. Cache, tabella contanti e conteggio banconote restano disponibili senza connessione. La data del tasso rimane visibile.
 
-<b>Funziona prima ancora di aver visto internet.</b>
-Una fotografia dei tassi è inclusa nell'app, quindi converte correttamente già al primo avvio, anche con la rete spenta. Da lì in poi conserva una copia locale di tutto, e l'interfaccia non aspetta mai una connessione.
+<b>Mostra l’età reale della conversione</b>
+La data del tasso è distinta dall’ora in cui la fonte è stata verificata. Un cambio incrociato usa la quotazione più vecchia fra quelle necessarie. Oltre sette giorni la data è rossa; le date sconosciute sono indicate esplicitamente.
 
-<b>Non nasconde mai quanto sono vecchi i tassi.</b>
-Ogni schermata dice quando sono stati aggiornati e da quale fonte arrivano. Oltre una settimana, lo scrive in rosso. Un tasso senza età dichiarata è un numero di cui non ci si può fidare, e mostrarlo in silenzio è il difetto comune a quasi tutti i convertitori.
-
-<b>Non dipende da un solo endpoint.</b>
-Moneta usa otto fonti indipendenti: l'aggregato Frankfurter di 84 banche centrali, un archivio servito da CDN che resta raggiungibile dove le API dirette sono bloccate, e diverse banche centrali fra cui BCE, Bank of Canada, Norges Bank e Bank Rossii. Se una non risponde si passa alla successiva, e l'app dice quale ha usato. Si può anche puntare a una propria istanza self-hosted.
+<b>Più fonti e aggiornamenti controllabili</b>
+Moneta prova altre fonti se una non risponde o non copre le tue valute. Ogni conversione usa uno snapshot completo di una sola fonte. Scegli intervallo automatico, solo su richiesta, solo Wi-Fi o modalità offline. Il vincolo Wi-Fi vale anche per le richieste manuali. Puoi salvare e verificare separatamente un endpoint personale compatibile con Frankfurter v2.
 
 <b>Pensata per viaggiare</b>
+• Tastierino numerico compatto, espandibile in calcolatrice
+• Cambio contanti: la commissione riduce quanto ricevi; pagamento carta: aumenta il costo
+• Copia e incolla numeri nel formato della lingua dell’app
+• Importi, espressioni e campo attivo salvati
+• Preferiti nel tuo ordine, con trascinamento e comandi accessibili su/giù
+• Coppia Casa/Locale indipendente, tabella dei tagli reali e conta-banconote
+• Conteggio conservato per valuta locale, totale sempre disponibile nelle due valute
+• Grafici storici e suggerimenti di valuta locale senza permesso di posizione
 
-• Tabella dei contanti: quanto vale ogni banconota vera della valuta locale, con i tagli davvero in circolazione — da 1.000 a 500.000 dong in Vietnam, non un generico elenco 1-2-5
-• Board multi-valuta: un importo, tutte le tue valute convertite insieme
-• Rilevamento della valuta locale senza permesso di posizione e senza GPS
-• Grafici storici con griglia e assi
-• Maggiorazione di carta o cambiavalute, per vedere la cifra che ti daranno davvero
-• Calcolatrice dentro il campo importo: dividi il conto, aggiungi la mancia
-• Ricerca delle valute per paese — scrivi "Vietnam", non "VND"
-
-<b>Aritmetica esatta</b>
-Il denaro non viene mai salvato né calcolato in virgola mobile. Gli importi restano esatti attraverso ogni conversione, cosa che conta soprattutto per le valute ad alta denominazione, dove l'errore sarebbe visibile.
+<b>Aritmetica decimale</b>
+Importi e tassi usano BigDecimal, con 16 cifre significative e HALF_UP nei passaggi intermedi, più arrotondamento di visualizzazione adatto alla valuta. I risultati decimali periodici hanno precisione finita. I tassi sono di riferimento: non garantiscono la cifra applicata da banca o cambiavalute.
 
 <b>Privacy</b>
-Nessuna pubblicità, nessun tracciatore, nessuna analisi, nessun servizio Google Play. L'unico permesso che conta è l'accesso a internet, usato solo per scaricare i tassi.
+Nessuna pubblicità, nessun tracciatore o analisi. Nessun servizio Google Play. Accesso a internet e stato della rete servono ai tassi e alle preferenze di connessione; non serve la posizione.
 
 Software libero e open source, GPL-3.0-or-later.
-
-I tassi sono di riferimento. Non sono quelli che darà davvero una banca o un cambiavalute: è a questo che serve la maggiorazione configurabile.

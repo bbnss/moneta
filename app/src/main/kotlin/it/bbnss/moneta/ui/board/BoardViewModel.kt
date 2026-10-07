@@ -40,6 +40,7 @@ data class BoardUiState(
     val freshness: Freshness? = null,
     val age: Duration? = null,
     val updatedAt: Instant? = null,
+    val rateDate: java.time.LocalDate? = null,
     /** Valute coperte dalla fonte, per il selettore di aggiunta. */
     val availableCurrencies: List<Currency> = emptyList(),
     val favourites: Set<Currency> = emptySet(),
@@ -57,7 +58,40 @@ class BoardViewModel(
     private val settings: SettingsStore,
 ) : ViewModel() {
 
-    private val input = MutableStateFlow("")
+    private val input = MutableStateFlow("1")
+    private var initialInput = true
+    private var restored = false
+
+    init { viewModelScope.launch {
+        val saved = settings.boardCalculation.first()
+        input.value = saved.input
+        initialInput = saved.initial
+        restored = true
+    } }
+
+    fun onPaste(text: String, locale: java.util.Locale): Boolean {
+        val amount = AmountFormat.parse(text, locale) ?: return false
+        input.value = amount.toPlainString()
+        initialInput = false
+        persistCalculation()
+        return true
+    }
+
+    private fun persistCalculation() {
+        val typed = input.value
+        val initial = initialInput
+        viewModelScope.launch { settings.setBoardCalculation(typed, initial) }
+    }
+
+    fun onMove(currency: Currency, direction: Int) {
+        viewModelScope.launch {
+            val favourites = settings.favourites.first()
+            settings.setFavourites(it.bbnss.moneta.core.model.FavouriteOrder.move(
+                favourites, currency, settings.baseCurrency.first(), direction))
+        }
+    }
+
+    fun requestedCurrencies(): Set<Currency> = state.value.favourites + state.value.base
 
     val state: StateFlow<BoardUiState> = combine(
         repository.state,
@@ -65,15 +99,16 @@ class BoardViewModel(
         settings.favourites,
         input,
     ) { rates, base, favourites, typed ->
-        val snapshot = rates.snapshot
+        val snapshot = rates.snapshotFor(favourites + base)
         val amount = (Expression.evaluate(typed) as? Expression.Result.Value)?.amount
 
         // La valuta dell'importo non si ripete nell'elenco: è già in cima.
         val targets = favourites.filter { it != base }
 
         val rows = targets.map { currency ->
-            val converted = if (amount != null && snapshot != null) {
-                snapshot.convert(amount, base, currency)
+            val pairSnapshot = rates.snapshotFor(listOf(base, currency))
+            val converted = if (amount != null && pairSnapshot != null) {
+                pairSnapshot.convert(amount, base, currency)
             } else {
                 null
             }
@@ -96,10 +131,16 @@ class BoardViewModel(
             },
             rows = rows,
             hasFavourites = favourites.isNotEmpty(),
-            freshness = rates.freshness,
-            age = rates.age,
+            freshness = it.bbnss.moneta.core.model.FreshnessRules.of(snapshot?.let { row ->
+                targets.map { row.dateFor(base, it) }.takeIf { dates -> dates.all { it != null } }?.filterNotNull()?.minOrNull()
+            }, rates.today),
+            age = it.bbnss.moneta.core.model.FreshnessRules.rateAge(snapshot?.let { row ->
+                targets.map { row.dateFor(base, it) }.takeIf { dates -> dates.all { it != null } }?.filterNotNull()?.minOrNull()
+            }, rates.today),
+            rateDate = snapshot?.let { row -> targets.map { row.dateFor(base, it) }
+                .takeIf { dates -> dates.all { it != null } }?.filterNotNull()?.minOrNull() },
             updatedAt = snapshot?.fetchedAt,
-            availableCurrencies = snapshot?.currencies?.sortedBy { it.code }.orEmpty(),
+            availableCurrencies = rates.snapshots.flatMap { it.currencies }.distinct().sortedBy { it.code },
             favourites = favourites.toSet(),
         )
     }.stateIn(
@@ -109,6 +150,9 @@ class BoardViewModel(
     )
 
     fun onKey(key: KeypadKey) {
+        if (!restored) return
+        if (initialInput && key is KeypadKey.Symbol) input.value = ""
+        initialInput = false
         when (key) {
             is KeypadKey.Symbol -> input.value += key.value
             KeypadKey.Backspace -> input.value = input.value.dropLast(1)
@@ -120,6 +164,7 @@ class BoardViewModel(
                 }
             }
         }
+        persistCalculation()
     }
 
     /**
@@ -131,9 +176,9 @@ class BoardViewModel(
     /** Aggiunge o toglie una valuta dall'elenco, direttamente da questa schermata. */
     fun onToggleFavourite(currency: Currency) {
         viewModelScope.launch {
-            val current = settings.favourites.first().toSet()
+            val current = settings.favourites.first()
             settings.setFavourites(
-                if (currency in current) current - currency else current + currency,
+                if (currency in current) current.filter { it != currency } else current + currency,
             )
         }
     }

@@ -24,7 +24,19 @@ data class RateSnapshot(
     val rates: Map<Currency, BigDecimal>,
     val rateDate: LocalDate,
     val fetchedAt: Instant,
+    val rateDates: Map<Currency, LocalDate> = rates.keys.associateWith { rateDate },
+    val endpoint: String? = null,
 ) {
+
+    /** Only the quotations actually used contribute dates; the pivot is an identity. */
+    fun datesFor(from: Currency, to: Currency): Map<Currency, LocalDate?> =
+        if (from == to) emptyMap() else listOf(from, to).filter { it != pivot }
+            .associateWith { rateDates[it] }
+
+    fun dateFor(from: Currency, to: Currency): LocalDate? {
+        val dates = datesFor(from, to).values
+        return if (dates.isEmpty() || dates.any { it == null }) null else dates.filterNotNull().minOrNull()
+    }
 
     val currencies: Set<Currency> get() = rates.keys + pivot
 

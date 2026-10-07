@@ -122,10 +122,9 @@ fun MonetaKeypad(
         // digita un importo e basta. Una riga in meno e tasti più bassi
         // liberano un terzo dello schermo per l'elenco delle valute.
         KeypadLayout.NUMERIC -> listOf(
-            listOf(Key.Digit('7'), Key.Digit('8'), Key.Digit('9')),
-            listOf(Key.Digit('4'), Key.Digit('5'), Key.Digit('6')),
-            listOf(Key.Digit('1'), Key.Digit('2'), Key.Digit('3')),
-            listOf(decimal, Key.Digit('0'), backspace),
+            listOf(Key.Digit('7'), Key.Digit('8'), Key.Digit('9'), backspace),
+            listOf(Key.Digit('4'), Key.Digit('5'), Key.Digit('6'), Key.Digit('0')),
+            listOf(Key.Digit('1'), Key.Digit('2'), Key.Digit('3'), decimal),
         )
     }
 

@@ -17,6 +17,24 @@ import java.util.Locale
  */
 object AmountFormat {
 
+    fun parse(text: String, locale: Locale = Locale.getDefault()): BigDecimal? {
+        val symbols = DecimalFormatSymbols.getInstance(locale)
+        val raw = text.trim().replace('\u00a0', ' ').replace('\u202f', ' ')
+        val decimal = symbols.decimalSeparator
+        val grouping = if (symbols.groupingSeparator.isWhitespace()) ' ' else symbols.groupingSeparator
+        val signed = raw.removePrefix("+").removePrefix("-")
+        val parts = signed.split(decimal)
+        if (parts.size > 2) return null
+        val integer = parts[0]
+        val groups = integer.split(grouping)
+        if (groups.size > 1 && (groups[0].length !in 1..3 || groups.drop(1).any { it.length != 3 })) return null
+        if (groups.any { it.isEmpty() || !it.all(Char::isDigit) }) return null
+        if (parts.size == 2 && (parts[1].isEmpty() || !parts[1].all(Char::isDigit))) return null
+        val canonical = (if (raw.startsWith("-")) "-" else "") + groups.joinToString("") +
+            (if (parts.size == 2) "." + parts[1] else "")
+        return canonical.toBigDecimalOrNull()
+    }
+
     /**
      * Importo con il numero di decimali corretto per la valuta.
      *

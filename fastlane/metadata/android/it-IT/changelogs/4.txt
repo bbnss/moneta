@@ -1,0 +1,1 @@
+Date delle quotazioni, fallback con copertura, tastierino compatto, importi salvati, commissioni contanti/carta, preferiti ordinabili e conta-banconote.

@@ -20,25 +20,13 @@
     <string name="keypad_equals">Calcola</string>
 
     <!-- Freschezza dei dati -->
-    <string name="freshness_today">Aggiornato oggi alle %1$s</string>
-    <string name="freshness_yesterday">Aggiornato ieri alle %1$s</string>
     <!-- L'italiano ha anche la categoria "many" (milioni), che vuole la
          preposizione: "un milione DI giorni". Non capiterà mai con dei tassi di
          cambio, ma CLDR la richiede e senza il layout resta incompleto. -->
-    <plurals name="freshness_days_ago">
-        <item quantity="one">Aggiornato %1$d giorno fa</item>
-        <item quantity="many">Aggiornato %1$d di giorni fa</item>
-        <item quantity="other">Aggiornato %1$d giorni fa</item>
-    </plurals>
-    <plurals name="freshness_stale">
-        <item quantity="one">Tassi di %1$d giorno fa — potrebbero non essere accurati</item>
-        <item quantity="many">Tassi di %1$d di giorni fa — potrebbero non essere accurati</item>
-        <item quantity="other">Tassi di %1$d giorni fa — potrebbero non essere accurati</item>
-    </plurals>
-    <string name="freshness_unknown">Nessun tasso disponibile</string>
+    <string name="freshness_unknown">Data del tasso sconosciuta</string>
     <string name="freshness_source">Fonte: %1$s</string>
     <string name="freshness_substituted">%1$s non raggiungibile, dati da %2$s</string>
-    <string name="freshness_rate_date">Tassi al %1$s</string>
+    <string name="freshness_rate_date">Tasso del %1$s</string>
     <string name="freshness_details">Dettagli del tasso</string>
 
     <!-- Impostazioni -->
@@ -57,8 +45,8 @@
     <string name="settings_failover">Prova altre fonti automaticamente</string>
     <string name="settings_failover_explain">Se la tua fonte non risponde, l\'app usa la successiva e ti dice quale. Disattivalo per usare sempre e solo quella scelta.</string>
     <string name="settings_custom_endpoint">Endpoint self-hosted</string>
-    <string name="settings_custom_endpoint_explain">Indirizzo di una tua istanza Frankfurter. Serve dove gli endpoint pubblici sono bloccati. Lascia vuoto per disattivarlo.</string>
-    <string name="settings_custom_endpoint_invalid">L\'indirizzo deve iniziare con http:// o https://</string>
+    <string name="settings_custom_endpoint_explain">Indirizzo del server Frankfurter v2, anche con sottopercorso. Salva esplicitamente; Verifica controlla la copertura senza cambiare fonte.</string>
+    <string name="settings_custom_endpoint_invalid">Inserisci un URL HTTPS completo, senza query o frammento.</string>
 
     <string name="settings_section_updates">Aggiornamenti</string>
     <string name="settings_interval">Aggiorna ogni</string>
@@ -70,7 +58,7 @@
     <string name="settings_interval_weekly">settimana</string>
     <string name="settings_interval_manual">Solo quando lo chiedo</string>
     <string name="settings_wifi_only">Solo su Wi-Fi</string>
-    <string name="settings_wifi_only_explain">Evita di consumare dati mobili, che è quello che serve in roaming.</string>
+    <string name="settings_wifi_only_explain">Vale per aggiornamenti automatici e manuali, storico e verifica endpoint.</string>
     <string name="settings_offline">Modalità offline</string>
     <string name="settings_offline_explain">Blocca ogni traffico di rete. L\'app continua a funzionare sui tassi che ha già.</string>
 
@@ -114,11 +102,8 @@
     <string name="suggestion_dismiss">No, grazie</string>
 
     <!-- Commissione di carta o cambiavalute -->
-    <string name="markup_label">Commissione carta o cambio</string>
-    <string name="markup_with_fee">%1$s con commissione %2$s</string>
-    <string name="markup_chip_none">Aggiungi commissione</string>
-    <string name="markup_chip_set">Commissione %1$s</string>
-    <string name="markup_explain">I tassi di riferimento non sono quelli che dà davvero una banca o un cambiavalute. Imposta la maggiorazione che applicano per vedere una cifra realistica.</string>
+    <string name="markup_label">Commissione</string>
+    <string name="markup_explain">Cambio contanti riduce quanto ricevi. Pagamento carta aumenta il costo. Il risultato principale include la commissione.</string>
     <string name="markup_none">Nessuna</string>
     <string name="markup_save">Salva</string>
     <string name="markup_cancel">Annulla</string>
@@ -139,8 +124,7 @@
     <string name="board_show_keypad">Mostra il tastierino</string>
 
     <!-- Tabella da viaggio -->
-    <string name="ratecard_title">%1$s in %2$s</string>
-    <string name="ratecard_subtitle">Quanto vale ogni banconota</string>
+    <string name="ratecard_subtitle">Tassi di riferimento, senza commissioni.</string>
     <string name="ratecard_estimated">I tagli di %1$s non sono nel nostro elenco: questi importi sono una stima ragionevole.</string>
     <string name="ratecard_share">Condividi la tabella</string>
     <string name="ratecard_share_title">Tabella dei cambi</string>
@@ -149,10 +133,39 @@
     <!-- Aggiornamento -->
     <string name="refresh">Aggiorna i tassi</string>
     <string name="refresh_updated">Tassi aggiornati da %1$s</string>
-    <string name="refresh_failed">Nessuna fonte raggiungibile — mostrati gli ultimi tassi salvati</string>
+    <string name="refresh_failed">Aggiornamento non disponibile per queste valute. Tassi in cache conservati.</string>
     <string name="refresh_offline">La modalità offline è attiva</string>
     <string name="history_error_network">Non è stato possibile raggiungere la fonte dei tassi. Connettiti e riprova.</string>
     <string name="history_error_format">La fonte ha risposto in un formato inatteso: probabilmente è cambiata. Segnalacelo.</string>
     <string name="history_error_offline">La modalità offline è attiva e questo periodo non è mai stato scaricato.</string>
     <string name="board_add_currency">Aggiungi una valuta</string>
+    <string name="freshness_verified">Verificato %1$s</string>
+    <string name="fee_cash">Cambio contanti</string>
+    <string name="fee_card">Pagamento carta</string>
+    <string name="fee_receive">Ricevi</string>
+    <string name="fee_cost">Costo con carta</string>
+    <string name="reference_rate">Riferimento: 1 %1$s = %2$s %3$s</string>
+    <string name="keypad_calculator">Calcolatrice</string>
+    <string name="keypad_numeric">Tastierino numerico</string>
+    <string name="amount_actions">Azioni importo</string>
+    <string name="amount_copy">Copia</string>
+    <string name="amount_paste">Incolla</string>
+    <string name="amount_invalid">Numero non valido per la lingua attiva. Il calcolo resta invariato.</string>
+    <string name="refresh_wifi">Connettiti al Wi-Fi per aggiornare. Tassi in cache conservati.</string>
+    <string name="endpoint_verify">Verifica</string>
+    <string name="endpoint_verifying">Verifica in corso…</string>
+    <string name="endpoint_coverage">Verificato: %1$d valute. La fonte selezionata resta invariata.</string>
+    <string name="endpoint_error">Verifica non riuscita: %1$s</string>
+    <string name="favourites_reorder">Riordina</string>
+    <string name="favourites_done">Fine</string>
+    <string name="favourites_up">Sposta su</string>
+    <string name="favourites_down">Sposta giù</string>
+    <string name="cash_home">Casa: %1$s</string>
+    <string name="cash_local">Locale: %1$s</string>
+    <string name="cash_table">Tabella</string>
+    <string name="cash_count">Conta banconote</string>
+    <string name="cash_add">Aggiungi una banconota da %1$s</string>
+    <string name="cash_remove">Togli una banconota da %1$s</string>
+    <string name="cash_reset">Azzera conteggio</string>
+    <string name="cash_total">Totale: %1$s %2$s\n%3$s %4$s</string>
 </resources>

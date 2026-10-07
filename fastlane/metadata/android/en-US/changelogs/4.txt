@@ -1,0 +1,1 @@
+Quotation dates, smarter fallback, compact keypad, saved amounts, cash/card fees, ordered favourites and banknote counter.

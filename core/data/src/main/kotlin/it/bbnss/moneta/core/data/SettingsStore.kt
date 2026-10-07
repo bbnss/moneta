@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import it.bbnss.moneta.core.model.FeeMode
 import it.bbnss.moneta.core.model.Currency
 import it.bbnss.moneta.core.model.ProviderId
 import it.bbnss.moneta.core.model.ThemeMode
@@ -19,9 +20,9 @@ import java.math.BigDecimal
 
 private val Context.preferencesStore: DataStore<Preferences> by preferencesDataStore("settings")
 
-class SettingsStore(context: Context) {
+class SettingsStore internal constructor(private val store: DataStore<Preferences>) {
 
-    private val store = context.applicationContext.preferencesStore
+    constructor(context: Context) : this(context.applicationContext.preferencesStore)
 
     /**
      * Fonte scelta dall'utente. Si persiste [ProviderId.stableId], non
@@ -96,6 +97,9 @@ class SettingsStore(context: Context) {
      * toglie tutte non se le deve ritrovare al riavvio.
      */
     val favourites: Flow<List<Currency>> = store.data.map { prefs ->
+        prefs[KEY_FAVOURITES_ORDER]?.let { order ->
+            return@map order.split(',').mapNotNull(Currency::parse).distinct()
+        }
         val stored = prefs[KEY_FAVOURITES]
             ?: return@map DEFAULT_FAVOURITES
         stored.mapNotNull { Currency.parse(it) }.sortedBy { it.code }
@@ -104,6 +108,7 @@ class SettingsStore(context: Context) {
     suspend fun setFavourites(currencies: Collection<Currency>) {
         store.edit {
             it[KEY_FAVOURITES] = currencies.map { currency -> currency.code }.toSet()
+            it[KEY_FAVOURITES_ORDER] = currencies.distinct().joinToString(",") { currency -> currency.code }
         }
     }
 
@@ -151,18 +156,85 @@ class SettingsStore(context: Context) {
         store.edit { it[KEY_DYNAMIC_COLOR] = enabled }
     }
 
-    suspend fun snapshotOfSettings(): Settings = Settings(
-        preferredProvider = preferredProvider.first(),
-        allowFailover = allowFailover.first(),
-        customEndpoint = customEndpoint.first(),
-        offlineMode = offlineMode.first(),
-    )
+    val feeMode: Flow<FeeMode> = store.data.map {
+        it[KEY_FEE_MODE]?.let { name -> runCatching { FeeMode.valueOf(name) }.getOrNull() }
+            ?: FeeMode.CASH
+    }
+    suspend fun setFeeMode(mode: FeeMode) {
+        store.edit { it[KEY_FEE_MODE] = mode.name }
+    }
+
+    data class Calculation(val input: String = "1", val field: String = "FROM", val initial: Boolean = true)
+    val calculation: Flow<Calculation> = store.data.map {
+        Calculation(it[KEY_INPUT] ?: "1", it[KEY_FIELD] ?: "FROM", it[KEY_INITIAL] ?: true)
+    }
+    suspend fun setCalculation(input: String, field: String, initial: Boolean) {
+        store.edit { it[KEY_INPUT] = input; it[KEY_FIELD] = field; it[KEY_INITIAL] = initial }
+    }
+    val boardCalculation: Flow<Calculation> = store.data.map {
+        Calculation(it[KEY_BOARD_INPUT] ?: "1", initial = it[KEY_BOARD_INITIAL] ?: true)
+    }
+    suspend fun setBoardCalculation(input: String, initial: Boolean) {
+        store.edit { it[KEY_BOARD_INPUT] = input; it[KEY_BOARD_INITIAL] = initial }
+    }
+
+    val cashPair: Flow<Pair<Currency, Currency>> = store.data.map {
+        val local = Currency.parse(it[KEY_CASH_LOCAL]) ?: Currency.parse(it[KEY_BASE]) ?: Currency.EUR
+        val home = Currency.parse(it[KEY_CASH_HOME]) ?: Currency.parse(it[KEY_QUOTE]) ?: Currency.USD
+        local to home
+    }
+    suspend fun ensureCashPair() {
+        store.edit {
+            if (it[KEY_CASH_LOCAL] == null) it[KEY_CASH_LOCAL] = it[KEY_BASE] ?: "EUR"
+            if (it[KEY_CASH_HOME] == null) it[KEY_CASH_HOME] = it[KEY_QUOTE] ?: "USD"
+        }
+    }
+    suspend fun setCashPair(local: Currency, home: Currency) {
+        store.edit { it[KEY_CASH_LOCAL] = local.code; it[KEY_CASH_HOME] = home.code }
+    }
+    fun cashCounts(currency: Currency): Flow<Map<BigDecimal, Int>> = store.data.map { prefs ->
+        prefs[stringPreferencesKey("cash_counts_" + currency.code)].orEmpty().split(';').mapNotNull { entry ->
+            val parts = entry.split(':')
+            val denomination = parts.getOrNull(0)?.toBigDecimalOrNull() ?: return@mapNotNull null
+            val count = parts.getOrNull(1)?.toIntOrNull()?.takeIf { it >= 0 } ?: return@mapNotNull null
+            denomination to count
+        }.toMap()
+    }
+    suspend fun adjustCashCount(currency: Currency, denomination: BigDecimal, delta: Int) {
+        store.edit { prefs ->
+            val key = stringPreferencesKey("cash_counts_" + currency.code)
+            val counts = prefs[key].orEmpty().split(';').mapNotNull { entry ->
+                val parts = entry.split(':')
+                if (parts.size == 2) parts[0] to parts[1] else null
+            }.toMap().toMutableMap()
+            val previous = counts[denomination.toPlainString()]?.toLongOrNull() ?: 0
+            counts[denomination.toPlainString()] = (previous + delta).coerceIn(0, Int.MAX_VALUE.toLong()).toString()
+            prefs[key] = counts.entries.joinToString(";") { it.key + ":" + it.value }
+        }
+    }
+    suspend fun resetCashCounts(currency: Currency) {
+        store.edit { it.remove(stringPreferencesKey("cash_counts_" + currency.code)) }
+    }
+
+    suspend fun snapshotOfSettings(): Settings {
+        val prefs = store.data.first()
+        return Settings(
+            preferredProvider = prefs[KEY_PROVIDER]?.let(ProviderId::fromStableId) ?: ProviderId.FRANKFURTER,
+            allowFailover = prefs[KEY_FAILOVER] ?: true,
+            customEndpoint = prefs[KEY_CUSTOM_ENDPOINT],
+            offlineMode = prefs[KEY_OFFLINE] ?: false,
+            wifiOnly = prefs[KEY_WIFI_ONLY] ?: false,
+            intervalHours = prefs[KEY_SYNC_HOURS] ?: 12,
+        )
+    }
 
     data class Settings(
         val preferredProvider: ProviderId,
         val allowFailover: Boolean,
         val customEndpoint: String?,
         val offlineMode: Boolean,
+        val wifiOnly: Boolean,
+        val intervalHours: Int,
     )
 
     private companion object {
@@ -173,6 +245,15 @@ class SettingsStore(context: Context) {
             Currency.GBP,
         ).sortedBy { it.code }
 
+        val KEY_FAVOURITES_ORDER = stringPreferencesKey("favourite_order")
+        val KEY_FEE_MODE = stringPreferencesKey("fee_mode")
+        val KEY_INPUT = stringPreferencesKey("convert_input")
+        val KEY_FIELD = stringPreferencesKey("convert_field")
+        val KEY_INITIAL = booleanPreferencesKey("convert_initial")
+        val KEY_BOARD_INPUT = stringPreferencesKey("board_input")
+        val KEY_BOARD_INITIAL = booleanPreferencesKey("board_initial")
+        val KEY_CASH_LOCAL = stringPreferencesKey("cash_local")
+        val KEY_CASH_HOME = stringPreferencesKey("cash_home")
         val KEY_PROVIDER = intPreferencesKey("preferred_provider")
         val KEY_FAILOVER = booleanPreferencesKey("allow_failover")
         val KEY_CUSTOM_ENDPOINT = stringPreferencesKey("custom_endpoint")

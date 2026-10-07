@@ -90,6 +90,7 @@ class BankOfCanadaProvider(
             rates = rates,
             rateDate = rateDate,
             fetchedAt = clock.instant(),
+            rateDates = latest.mapValues { it.value.first },
         )
     }
 

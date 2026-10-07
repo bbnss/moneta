@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -17,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -48,11 +50,12 @@ fun FreshnessBadge(
     freshness: Freshness?,
     age: Duration?,
     updatedAt: Instant?,
+    rateDate: LocalDate? = null,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
 ) {
     val colors = MaterialTheme.colorScheme
-    val dark = isSystemInDarkTheme()
+    val dark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
 
     val accent = when (freshness) {
         Freshness.FRESH -> if (dark) Color(0xFF81C784) else Color(0xFF2E7D32)
@@ -62,30 +65,14 @@ fun FreshnessBadge(
         null -> colors.onSurfaceVariant
     }
 
-    val days = age?.toDays()?.toInt() ?: 0
+    val locale = LocalConfiguration.current.locales[0]
     val zone = ZoneId.systemDefault()
-
-    val label = when {
-        freshness == null || updatedAt == null -> stringResource(R.string.freshness_unknown)
-
-        // "Fresco" significa meno di 24 ore, che non è la stessa cosa di "oggi":
-        // alle 10 del mattino un dato delle 21 di ieri rientra nelle 24 ore ma
-        // resta di ieri. Su un'app che esiste per dire l'età vera del dato,
-        // chiamarlo "oggi" sarebbe la prima piccola bugia.
-        freshness == Freshness.FRESH -> {
-            val updatedOn = updatedAt.atZone(zone).toLocalDate()
-            val time = shortTimeFormatter().format(updatedAt.atZone(zone))
-            if (updatedOn == LocalDate.now(zone)) {
-                stringResource(R.string.freshness_today, time)
-            } else {
-                stringResource(R.string.freshness_yesterday, time)
-            }
-        }
-
-        freshness == Freshness.STALE ->
-            pluralStringResource(R.plurals.freshness_stale, days, days)
-
-        else -> pluralStringResource(R.plurals.freshness_days_ago, days, days)
+    val dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale)
+    val label = rateDate?.let { stringResource(R.string.freshness_rate_date, dateFormat.format(it)) }
+        ?: stringResource(R.string.freshness_unknown)
+    val verified = updatedAt?.let {
+        stringResource(R.string.freshness_verified,
+            DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(locale).format(it.atZone(zone)))
     }
 
     Row(
@@ -98,11 +85,10 @@ fun FreshnessBadge(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Box(Modifier.size(8.dp).background(accent, CircleShape))
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = if (freshness == Freshness.STALE) colors.error else colors.onSurfaceVariant,
-        )
+        Column {
+            Text(label, style = MaterialTheme.typography.bodySmall, color = accent)
+            verified?.let { Text(it, style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant) }
+        }
     }
 }
 

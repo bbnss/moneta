@@ -1,5 +1,14 @@
 package it.bbnss.moneta.ui.board
 
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material.icons.filled.MoreVert
+import it.bbnss.moneta.ui.components.AmountText
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -57,8 +66,17 @@ fun BoardScreen(
     onKey: (KeypadKey) -> Unit,
     onSetAsBase: (Currency) -> Unit,
     onToggleFavourite: (Currency) -> Unit,
+    onMove: (Currency, Int) -> Unit,
+    onPaste: (String, java.util.Locale) -> Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val clipboard = LocalClipboardManager.current
+    val locale = LocalConfiguration.current.locales[0]
+    var invalidPaste by remember { mutableStateOf(false) }
+    var reordering by rememberSaveable { mutableStateOf(false) }
+    val dragStep = with(LocalDensity.current) { 60.dp.toPx() }
+    val moveUp = stringResource(R.string.favourites_up)
+    val moveDown = stringResource(R.string.favourites_down)
     var showPicker by remember { mutableStateOf(false) }
     var showKeypad by rememberSaveable { mutableStateOf(true) }
 
@@ -74,6 +92,15 @@ fun BoardScreen(
             onClear = { onKey(KeypadKey.Clear) },
         )
 
+        Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+            TextButton(onClick = { clipboard.setText(AnnotatedString(state.inputText.ifEmpty { "0" })) }) { Text(stringResource(R.string.amount_copy)) }
+            TextButton(onClick = { invalidPaste = !onPaste(clipboard.getText()?.text.orEmpty(), locale) }) { Text(stringResource(R.string.amount_paste)) }
+            TextButton(onClick = { reordering = !reordering }) {
+                Text(stringResource(if (reordering) R.string.favourites_done else R.string.favourites_reorder))
+            }
+        }
+        if (invalidPaste) Text(stringResource(R.string.amount_invalid), color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(horizontal = 16.dp))
+
         if (!state.hasFavourites) {
             EmptyState(Modifier.weight(1f), onAdd = { showPicker = true })
         } else {
@@ -82,14 +109,34 @@ fun BoardScreen(
                 contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp),
             ) {
                 items(state.rows, key = { it.currency.code }) { row ->
-                    BoardRowItem(
+                    Row(Modifier.fillMaxWidth().then(if (reordering) Modifier.pointerInput(row.currency, dragStep) {
+                        var distance = 0f
+                        detectDragGesturesAfterLongPress(onDragStart = { distance = 0f }, onDrag = { change, drag ->
+                            change.consume()
+                            distance += drag.y
+                            if (kotlin.math.abs(distance) >= dragStep) {
+                                onMove(row.currency, if (distance > 0) 1 else -1)
+                                distance = 0f
+                            }
+                        })
+                    }.semantics {
+                        customActions = listOf(CustomAccessibilityAction(moveUp) { onMove(row.currency, -1); true },
+                            CustomAccessibilityAction(moveDown) { onMove(row.currency, 1); true })
+                    } else Modifier), verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) { BoardRowItem(
                         row = row,
                         setAsBaseLabel = stringResource(
                             R.string.board_set_as_base,
                             row.currency.code,
                         ),
-                        onLongPress = { onSetAsBase(row.currency) },
+                        onLongPress = { if (!reordering) onSetAsBase(row.currency) },
                     )
+                    }
+                    if (reordering) {
+                        IconButton(onClick = { onMove(row.currency, -1) }) { Icon(Icons.Default.KeyboardArrowUp, moveUp) }
+                        IconButton(onClick = { onMove(row.currency, 1) }) { Icon(Icons.Default.KeyboardArrowDown, moveDown) }
+                    }
+                    }
                     HorizontalDivider()
                 }
 
@@ -124,6 +171,7 @@ fun BoardScreen(
             freshness = state.freshness,
             age = state.age,
             updatedAt = state.updatedAt,
+            rateDate = state.rateDate,
             modifier = Modifier.padding(horizontal = 16.dp),
         )
 
@@ -192,13 +240,7 @@ private fun BaseAmountRow(
                 style = MaterialTheme.typography.titleMedium,
                 fontFamily = FontFamily.Monospace,
             )
-            Text(
-                text = text.ifEmpty { "0" },
-                style = MaterialTheme.typography.displaySmall,
-                textAlign = TextAlign.End,
-                maxLines = 1,
-                modifier = Modifier.weight(1f),
-            )
+            AmountText(text, Modifier.weight(1f))
 
             // Azzerare è l'operazione più frequente qui: si arriva con un
             // importo vecchio e se ne vuole scrivere uno nuovo.

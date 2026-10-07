@@ -1,1 +1,1 @@
-Convertitore di valuta che funziona offline e dichiara sempre l'età dei tassi
+Cambio valute offline, conta-banconote, nessuna pubblicità

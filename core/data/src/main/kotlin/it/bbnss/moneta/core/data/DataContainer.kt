@@ -26,7 +26,7 @@ class DataContainer private constructor(context: Context) {
     private val appContext = context.applicationContext
 
     val database: MonetaDatabase by lazy {
-        Room.databaseBuilder(appContext, MonetaDatabase::class.java, MonetaDatabase.NAME).build()
+        Room.databaseBuilder(appContext, MonetaDatabase::class.java, MonetaDatabase.NAME).addMigrations(MonetaDatabase.MIGRATION_1_2).build()
     }
 
     val settings: SettingsStore by lazy { SettingsStore(appContext) }
@@ -102,7 +102,8 @@ class DataContainer private constructor(context: Context) {
         RateRepository(
             dao = database.rateDao(),
             settings = settings,
-            seedLoader = seedLoader,
+            seedLoader = { seedLoader.load() },
+            networkStatus = { NetworkStatus.read(appContext) },
             registryFactory = { customEndpoint ->
                 ProviderRegistry(httpClient, customEndpoint, Clock.systemUTC())
             },

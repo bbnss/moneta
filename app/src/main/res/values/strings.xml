@@ -23,20 +23,10 @@
     <string name="keypad_equals">Calculate</string>
 
     <!-- Freshness -->
-    <string name="freshness_today">Updated today at %1$s</string>
-    <string name="freshness_yesterday">Updated yesterday at %1$s</string>
-    <plurals name="freshness_days_ago">
-        <item quantity="one">Updated %1$d day ago</item>
-        <item quantity="other">Updated %1$d days ago</item>
-    </plurals>
-    <plurals name="freshness_stale">
-        <item quantity="one">Rates are %1$d day old — they may be inaccurate</item>
-        <item quantity="other">Rates are %1$d days old — they may be inaccurate</item>
-    </plurals>
-    <string name="freshness_unknown">No rates yet</string>
+    <string name="freshness_unknown">Rate date unknown</string>
     <string name="freshness_source">Source: %1$s</string>
     <string name="freshness_substituted">%1$s was unreachable, showing data from %2$s</string>
-    <string name="freshness_rate_date">Rates dated %1$s</string>
+    <string name="freshness_rate_date">Rate from %1$s</string>
     <string name="freshness_details">Rate details</string>
 
     <!-- Settings -->
@@ -54,8 +44,8 @@
     <string name="settings_failover">Try other sources automatically</string>
     <string name="settings_failover_explain">If your source is unreachable, the app uses the next one and tells you which. Turn this off to only ever use the source you picked.</string>
     <string name="settings_custom_endpoint">Self-hosted endpoint</string>
-    <string name="settings_custom_endpoint_explain">Address of your own Frankfurter instance. Use this where the public endpoints are blocked. Leave empty to disable.</string>
-    <string name="settings_custom_endpoint_invalid">The address must start with http:// or https://</string>
+    <string name="settings_custom_endpoint_explain">Frankfurter v2 server address, including any deployment path. Save explicitly; Verify checks coverage without changing source.</string>
+    <string name="settings_custom_endpoint_invalid">Enter a complete HTTPS URL, without query or fragment.</string>
 
     <string name="settings_section_updates">Updates</string>
     <string name="settings_interval">Update every</string>
@@ -66,7 +56,7 @@
     <string name="settings_interval_weekly">week</string>
     <string name="settings_interval_manual">Only when I ask</string>
     <string name="settings_wifi_only">Only on Wi-Fi</string>
-    <string name="settings_wifi_only_explain">Avoids using mobile data, which is what you want while roaming.</string>
+    <string name="settings_wifi_only_explain">Applies to automatic updates, manual updates, history and endpoint verification.</string>
     <string name="settings_offline">Offline mode</string>
     <string name="settings_offline_explain">Blocks all network traffic. The app keeps working on the rates it already has.</string>
 
@@ -110,11 +100,8 @@
     <string name="suggestion_dismiss">No thanks</string>
 
     <!-- Card / exchange markup -->
-    <string name="markup_label">Card or bureau fee</string>
-    <string name="markup_with_fee">%1$s with %2$s fee</string>
-    <string name="markup_chip_none">Add card fee</string>
-    <string name="markup_chip_set">Fee %1$s</string>
-    <string name="markup_explain">Reference rates are not what a bank or a bureau actually gives you. Set the markup they charge to see a realistic amount.</string>
+    <string name="markup_label">Fee</string>
+    <string name="markup_explain">Cash exchange reduces the amount received. Card payment increases the cost. The main result includes the fee.</string>
     <string name="markup_none">None</string>
     <string name="markup_save">Save</string>
     <string name="markup_cancel">Cancel</string>
@@ -135,8 +122,7 @@
     <string name="board_show_keypad">Show the keypad</string>
 
     <!-- Travel rate card -->
-    <string name="ratecard_title">%1$s in %2$s</string>
-    <string name="ratecard_subtitle">What each banknote is worth</string>
+    <string name="ratecard_subtitle">Reference rates, without fees.</string>
     <string name="ratecard_estimated">Banknotes for %1$s are not in our list — these amounts are a reasonable guess.</string>
     <string name="ratecard_share">Share this table</string>
     <string name="ratecard_share_title">Exchange rate table</string>
@@ -145,10 +131,39 @@
     <!-- Refresh -->
     <string name="refresh">Refresh rates</string>
     <string name="refresh_updated">Rates updated from %1$s</string>
-    <string name="refresh_failed">Could not reach any source — showing the last saved rates</string>
+    <string name="refresh_failed">Update unavailable for these currencies. Cached rates kept.</string>
     <string name="refresh_offline">Offline mode is on</string>
     <string name="history_error_network">Could not reach the rate source. Connect and try again.</string>
     <string name="history_error_format">The source answered in an unexpected format — it has probably changed. Please report it.</string>
     <string name="history_error_offline">Offline mode is on and this period has never been downloaded.</string>
     <string name="board_add_currency">Add a currency</string>
+    <string name="freshness_verified">Verified %1$s</string>
+    <string name="fee_cash">Cash exchange</string>
+    <string name="fee_card">Card payment</string>
+    <string name="fee_receive">You receive</string>
+    <string name="fee_cost">Cost with card</string>
+    <string name="reference_rate">Reference: 1 %1$s = %2$s %3$s</string>
+    <string name="keypad_calculator">Calculator</string>
+    <string name="keypad_numeric">Numeric keypad</string>
+    <string name="amount_actions">Amount actions</string>
+    <string name="amount_copy">Copy</string>
+    <string name="amount_paste">Paste</string>
+    <string name="amount_invalid">Invalid number for the current language. Calculation unchanged.</string>
+    <string name="refresh_wifi">Connect to Wi-Fi to update. Cached rates kept.</string>
+    <string name="endpoint_verify">Verify</string>
+    <string name="endpoint_verifying">Verifying…</string>
+    <string name="endpoint_coverage">Verified: %1$d currencies. Source selection unchanged.</string>
+    <string name="endpoint_error">Verification failed: %1$s</string>
+    <string name="favourites_reorder">Reorder</string>
+    <string name="favourites_done">Done</string>
+    <string name="favourites_up">Move up</string>
+    <string name="favourites_down">Move down</string>
+    <string name="cash_home">Home: %1$s</string>
+    <string name="cash_local">Local: %1$s</string>
+    <string name="cash_table">Table</string>
+    <string name="cash_count">Count banknotes</string>
+    <string name="cash_add">Add a %1$s banknote</string>
+    <string name="cash_remove">Remove a %1$s banknote</string>
+    <string name="cash_reset">Reset counts</string>
+    <string name="cash_total">Total: %1$s %2$s\n%3$s %4$s</string>
 </resources>

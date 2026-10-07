@@ -44,6 +44,8 @@ class FailoverFetcher(private val registry: ProviderRegistry) {
     suspend fun fetchLatest(
         preferred: ProviderId,
         allowFailover: Boolean = true,
+        required: Set<it.bbnss.moneta.core.model.Currency> = emptySet(),
+        beforeFetch: suspend () -> Boolean = { true },
     ): FetchOutcome {
         val chain = when {
             allowFailover -> registry.failoverChain(preferred)
@@ -65,12 +67,19 @@ class FailoverFetcher(private val registry: ProviderRegistry) {
         val attempts = mutableListOf<FailedAttempt>()
 
         for (provider in chain) {
+            if (!beforeFetch()) break
             when (val result = provider.fetchLatest()) {
-                is ProviderResult.Success -> return FetchOutcome.Fetched(
+                is ProviderResult.Success -> {
+                    if (!required.all(result.value::supports)) {
+                        attempts += FailedAttempt(provider.id, FailureReason.UNSUPPORTED, "Missing requested currencies")
+                        continue
+                    }
+                    return FetchOutcome.Fetched(
                     snapshot = result.value,
                     preferred = preferred,
                     attempts = attempts.toList(),
                 )
+                }
 
                 is ProviderResult.Failure -> {
                     attempts += FailedAttempt(provider.id, result.reason, result.message)

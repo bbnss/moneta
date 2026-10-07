@@ -123,6 +123,7 @@ class NorgesBankProvider(
             rates = latest.mapValues { it.value.second },
             rateDate = latest.values.maxOf { it.first },
             fetchedAt = clock.instant(),
+            rateDates = latest.mapValues { it.value.first },
         )
     }
 

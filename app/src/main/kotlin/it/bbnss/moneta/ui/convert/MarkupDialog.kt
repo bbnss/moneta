@@ -33,6 +33,8 @@ import java.math.BigDecimal
 @Composable
 fun MarkupDialog(
     current: BigDecimal,
+    mode: it.bbnss.moneta.core.model.FeeMode,
+    onModeChanged: (it.bbnss.moneta.core.model.FeeMode) -> Unit,
     onConfirm: (BigDecimal) -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -40,12 +42,17 @@ fun MarkupDialog(
         listOf("0", "0.5", "1", "1.5", "2", "2.5", "3", "5", "8", "12").map { BigDecimal(it) }
     }
     var selected by remember { mutableStateOf(current) }
+    var selectedMode by remember { mutableStateOf(mode) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.markup_label)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                it.bbnss.moneta.core.model.FeeMode.entries.forEach { option ->
+                    FilterChip(selected = selectedMode == option, onClick = { selectedMode = option },
+                        label = { Text(stringResource(if (option == it.bbnss.moneta.core.model.FeeMode.CASH) R.string.fee_cash else R.string.fee_card)) })
+                }
                 Text(
                     text = stringResource(R.string.markup_explain),
                     style = MaterialTheme.typography.bodyMedium,
@@ -71,7 +78,7 @@ fun MarkupDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = { onConfirm(selected) }) {
+            TextButton(onClick = { onModeChanged(selectedMode); onConfirm(selected) }) {
                 Text(stringResource(R.string.markup_save))
             }
         },

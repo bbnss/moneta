@@ -22,12 +22,14 @@ internal fun RateSnapshot.toEntities(): Pair<SnapshotEntity, List<RateEntity>> {
         pivot = pivot.code,
         rateDate = rateDate.toString(),
         fetchedAt = fetchedAt.toEpochMilli(),
+        endpoint = endpoint,
     )
     val rows = rates.map { (currency, value) ->
         RateEntity(
             providerId = provider.stableId,
             currency = currency.code,
             value = value.toPlainString(),
+            rateDate = rateDates[currency]?.toString(),
         )
     }
     return snapshot to rows
@@ -57,6 +59,12 @@ internal fun SnapshotWithRates.toDomain(): RateSnapshot? {
         rates = parsed,
         rateDate = date,
         fetchedAt = Instant.ofEpochMilli(snapshot.fetchedAt),
+        endpoint = snapshot.endpoint,
+        rateDates = rates.mapNotNull { row ->
+            val currency = Currency.parse(row.currency) ?: return@mapNotNull null
+            val date = row.rateDate?.let { runCatching { LocalDate.parse(it) }.getOrNull() } ?: return@mapNotNull null
+            currency to date
+        }.toMap(),
     )
 }
 

@@ -169,6 +169,7 @@ private fun emptyMessage(reason: SeriesResult?): String = when (reason) {
         else -> stringResource(R.string.history_error_network)
     }
 
+    is SeriesResult.Blocked -> stringResource(if (reason.reason == it.bbnss.moneta.core.model.NetworkBlock.WIFI) R.string.refresh_wifi else R.string.refresh_failed)
     SeriesResult.Offline -> stringResource(R.string.history_error_offline)
     else -> stringResource(R.string.history_empty)
 }

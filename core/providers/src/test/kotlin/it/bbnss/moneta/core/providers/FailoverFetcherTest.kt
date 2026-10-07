@@ -47,6 +47,35 @@ private fun failing(reason: FailureReason) =
 class FailoverFetcherTest {
 
     @Test
+    fun `VND EUR prosegue oltre una risposta BCE incompleta`() = runTest {
+        val ecb = FakeProvider(ProviderId.ECB, snapshotFrom(ProviderId.ECB))
+        val complete = FakeProvider(ProviderId.FAWAZAHMED0, ProviderResult.Success(
+            snapshotFrom(ProviderId.FAWAZAHMED0).value.copy(rates = mapOf(Currency("VND") to BigDecimal("30000")))))
+        val registry = ProviderRegistry(listOf(ecb, complete))
+        val outcome = FailoverFetcher(registry).fetchLatest(ProviderId.ECB, required = setOf(Currency("VND"), Currency.EUR)) as FetchOutcome.Fetched
+        assertEquals(ProviderId.FAWAZAHMED0, outcome.snapshot.provider)
+        assertEquals(FailureReason.UNSUPPORTED, outcome.attempts.single().reason)
+        val disabled = FailoverFetcher(registry).fetchLatest(ProviderId.ECB, false, setOf(Currency("VND"), Currency.EUR))
+        assertTrue(disabled is FetchOutcome.AllFailed)
+        assertEquals(1, complete.calls)
+    }
+
+    @Test
+    fun `endpoint personale configurato partecipa al fallback`() = runTest {
+        val custom = FakeProvider(ProviderId.CUSTOM, snapshotFrom(ProviderId.CUSTOM))
+        val outcome = FailoverFetcher(ProviderRegistry(listOf(custom))).fetchLatest(ProviderId.ECB) as FetchOutcome.Fetched
+        assertEquals(ProviderId.CUSTOM, outcome.snapshot.provider)
+    }
+
+    @Test
+    fun `policy bloccata impedisce ogni chiamata`() = runTest {
+        val provider = FakeProvider(ProviderId.ECB, snapshotFrom(ProviderId.ECB))
+        val outcome = FailoverFetcher(ProviderRegistry(listOf(provider))).fetchLatest(ProviderId.ECB, beforeFetch = { false })
+        assertTrue(outcome is FetchOutcome.AllFailed)
+        assertEquals(0, provider.calls)
+    }
+
+    @Test
     fun `usa la fonte preferita quando risponde`() = runTest {
         val preferred = FakeProvider(ProviderId.FRANKFURTER, snapshotFrom(ProviderId.FRANKFURTER))
         val backup = FakeProvider(ProviderId.ECB, snapshotFrom(ProviderId.ECB))

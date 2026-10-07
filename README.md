@@ -10,7 +10,7 @@ Moneta answers "how much is 45,000 dong in euros?" in two seconds — on a plane
 
 Every currency app fails on at least one of these:
 
-- **It needs a connection.** Moneta ships with a rate snapshot inside the APK, so it converts correctly the very first time you open it, even with the network off. From then on it keeps a local copy of everything.
+- **It needs a connection.** Moneta ships with a rate snapshot inside the APK, so it can convert using dated reference rates the very first time you open it, even with the network off. From then on it keeps a local copy of everything.
 - **It shows stale rates without telling you.** Moneta always displays how old the rates are and which source they came from. Past a week, it says so in red.
 - **It depends on one endpoint.** Moneta talks to several independent providers and falls back automatically when one is unreachable — including a CDN-hosted source that stays reachable where direct APIs are blocked, and your own self-hosted endpoint if you want full control.
 
@@ -19,12 +19,22 @@ Every currency app fails on at least one of these:
 - Offline-first: the local database is the only source of truth, the UI never waits on the network
 - Explicit freshness indicator with four states, always visible
 - Multiple free providers, no API keys, automatic failover, manual override
-- Multi-currency board: one amount, all your favourite currencies at once
-- Travel rate card: real banknote denominations of the local currency converted at a glance
+- Multi-currency board: one amount, favourites in your saved order, with drag and accessible move controls
+- Cash table and banknote counter: independent Home/Local pair, counts saved per local currency, totals in both currencies
 - Automatic local-currency detection with no location permission
-- Historical charts, configurable card/exchange markup, built-in calculator with tip and bill split
-- Exact decimal maths — no floating-point rounding on your money
+- Historical charts; cash exchange fees reduce what you receive, card fees increase the cost; compact keypad with optional calculator
+- Decimal arithmetic: BigDecimal with 16 significant digits and HALF_UP for intermediate operations, currency-aware display rounding
 - No ads, no trackers, no analytics, no Google Play Services. `INTERNET` is the only meaningful permission.
+
+## Rates and updates in 0.2.0
+
+Each quotation keeps its own date. A cross-rate uses the oldest date among the quotations it needs; the pivot adds no artificial date. “Rate from” and “Verified” are separate. Today is green, 1–3 days neutral, 4–7 days amber, and more than 7 days red. Old cache entries whose dates were lost by 0.1.x remain unknown until refreshed. Age updates every minute while visible and on foreground return.
+
+Updates require coverage of the requested currencies. Incomplete responses continue through failover and never replace usable cache. Every conversion uses a complete snapshot from one provider. Offline blocks requests; Wi-Fi-only also applies to manual updates, history and endpoint verification. Manual-only disables automatic updates; the selected interval also governs opening and foreground checks.
+
+A custom endpoint accepts a complete HTTPS server URL with an optional deployment path. Moneta appends `/v2/rates`; Save and Verify are separate actions. Verification reports coverage without selecting a source or writing rate cache. Changing the address invalidates the previous CUSTOM cache.
+
+Amounts start at 1 and the first digit replaces that initial value. Amount, expression, active field, explicit clear and favourite order persist across process restarts. Paste accepts numbers in the active app language and rejects malformed text without changing the calculation.
 
 ## Data sources
 
@@ -32,7 +42,7 @@ All free, all key-less. See [`docs/SPEC.md`](docs/SPEC.md) for the full list and
 
 | Provider | Currencies | Notes |
 |---|---|---|
-| [Frankfurter](https://frankfurter.dev/) v2 | 201 | Default. 84 central banks, history back to 1948, self-hostable |
+| [Frankfurter](https://frankfurter.dev/) v2 | varies | Default. Aggregates official sources, supports history and self-hosting |
 | [fawazahmed0/exchange-api](https://github.com/fawazahmed0/exchange-api) | 338 | CDN-hosted, includes crypto and precious metals |
 | [ExchangeRate-API open](https://www.exchangerate-api.com/docs/free) | ~160 | Independent infrastructure |
 | European Central Bank | 29 | Static XML, official, survives API outages |
@@ -48,7 +58,10 @@ Requires JDK 21 and the Android SDK (compileSdk 36).
 ./gradlew assembleDebug     # build
 ./gradlew test              # unit tests
 ./gradlew lint              # static analysis
+./gradlew :core:data:connectedDebugAndroidTest  # Room/DataStore on an emulator
 ```
+
+Release candidates and installation/signature notes: [0.2.0 rc.1](docs/RELEASE_0.2.0-rc.1.md). [Verification record](docs/VERIFICATION_0.2.0.md).
 
 ## Contributing
 

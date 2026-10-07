@@ -6,6 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0-rc.1] — rates, compact conversion and banknotes
+
+- Preserve each quotation date through providers, Room schema 2 and offline seed. Cross-rates use the oldest necessary date; verification time is separate.
+- Select complete source snapshots for each pair and continue failover on missing coverage. Preserve cache on failed refresh.
+- Share network policy across opening, foreground, worker, manual updates, history and custom endpoint verification. Recompute freshness every minute without network traffic.
+- Add explicit HTTPS endpoint Save/Verify, CUSTOM selection and fallback, and invalidate its cache when the address changes.
+- Compact numeric keypad and navigation; optional calculator; saved calculations and active field; locale-aware copy/paste and scrollable long amounts.
+- Cash exchange and card payment fee modes apply directly to the main result, including inverse editing.
+- Saved favourite order with dragging and accessible move controls. Independent cash pair and banknote counter with decimal totals and per-currency counts.
+- Update Italian/English copy and store materials; state finite decimal precision and rounding accurately.
+- Release version 0.2.0, code 4, signed with the Moneta upload key. The previously published 0.1.1 test APK used a different debug certificate and cannot be updated directly.
+
+
 ## [0.1.1] — honesty fixes
 
 ### Fixed

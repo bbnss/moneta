@@ -1,4 +1,4 @@
-# Scheda del Play Store — Moneta 0.1.1 (versionCode 2)
+# Scheda del Play Store — Moneta 0.1.1 (versionCode 3)
 
 Tutto il materiale per creare la scheda dal browser. Generato il 26 agosto 2026
 dalla stessa build firmata che si carica.
@@ -11,10 +11,13 @@ Console si aggiungono da *Gestisci traduzioni*.
 
 ## Il pacchetto da caricare
 
-    dist/Moneta-0.1.1-2.aab
+    dist/Moneta-0.1.1-3.aab
 
 Firmato con `moneta-upload-key.jks` (alias `moneta`), verificato con
-`jarsigner -verify`. È la **chiave di upload**: Google firma poi l'APK con una
+`jarsigner -verify`. Il versionCode è 3 e non 2: la 2 è finita in una bozza
+poi cancellata in Console, e Play non riusa un numero già visto nemmeno se
+quella release non è mai stata pubblicata. Il versionName resta 0.1.1, perché
+il binario è lo stesso. È la **chiave di upload**: Google firma poi l'APK con una
 chiave propria, come per ogni app nuova. Password e percorso stanno in
 `keystore.properties`, che non è nel repository.
 

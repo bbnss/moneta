@@ -3,6 +3,7 @@ package it.bbnss.moneta.core.providers
 import it.bbnss.moneta.core.model.Currency
 import it.bbnss.moneta.core.model.ProviderId
 import io.ktor.http.HttpStatusCode
+import io.ktor.client.engine.mock.respond
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -18,6 +19,26 @@ class FrankfurterProviderTest {
             httpClient = clientReturning(body, status),
             clock = FIXED_CLOCK,
         )
+
+    @Test
+    fun `ALL USD conserva entrambe le date e usa la meno recente`() = runTest {
+        val snapshot = provider(fixture("frankfurter_latest.json")).fetchLatest().valueOrNull()!!
+        assertEquals(LocalDate.of(2026, 8, 7), snapshot.rateDates[Currency("ALL")])
+        assertEquals(LocalDate.of(2026, 8, 9), snapshot.rateDates[Currency.USD])
+        assertEquals(LocalDate.of(2026, 8, 7), snapshot.dateFor(Currency("ALL"), Currency.USD))
+    }
+
+    @Test
+    fun `endpoint personale conserva il sottopercorso`() = runTest {
+        var requested = ""
+        val client = io.ktor.client.HttpClient(io.ktor.client.engine.mock.MockEngine { request ->
+            requested = request.url.toString()
+            respond(fixture("frankfurter_latest.json"), HttpStatusCode.OK)
+        })
+        FrankfurterProvider(client, "https://example.org/travel/rates", ProviderId.CUSTOM).fetchLatest()
+        assertEquals("https://example.org/travel/rates/v2/rates?base=EUR", requested)
+        client.close()
+    }
 
     @Test
     fun `legge i tassi correnti`() = runTest {

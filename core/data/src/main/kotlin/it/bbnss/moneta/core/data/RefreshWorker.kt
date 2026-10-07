@@ -31,10 +31,11 @@ class RefreshWorker(
         // la rete non risponde.
         repository.ensureSeeded()
 
-        return when (repository.refresh()) {
+        return when (repository.refresh(kind = it.bbnss.moneta.core.model.RequestKind.AUTOMATIC)) {
             is RefreshResult.Updated -> Result.success()
             // Non è un guasto: l'utente ha chiesto di non usare la rete.
             RefreshResult.SkippedOffline -> Result.success()
+            is RefreshResult.Blocked -> Result.success()
             is RefreshResult.Failed -> Result.retry()
         }
     }

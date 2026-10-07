@@ -11,8 +11,9 @@ import it.bbnss.moneta.core.data.SettingsStore
 import it.bbnss.moneta.core.model.AmountFormat
 import it.bbnss.moneta.core.model.CountryCurrencies
 import it.bbnss.moneta.core.model.Currency
+import it.bbnss.moneta.core.model.FeeMode
+import it.bbnss.moneta.core.model.Fees
 import it.bbnss.moneta.core.model.Freshness
-import it.bbnss.moneta.core.model.MonetaryMath
 import it.bbnss.moneta.core.model.ProviderId
 import it.bbnss.moneta.core.model.calc.Expression
 import it.bbnss.moneta.core.ui.components.KeypadKey
@@ -43,6 +44,8 @@ sealed interface RefreshMessage {
     data class Updated(val provider: ProviderId) : RefreshMessage
     data object Failed : RefreshMessage
     data object Offline : RefreshMessage
+    data object Wifi : RefreshMessage
+    data object InvalidPaste : RefreshMessage
 }
 
 /** Proposta di impostare la valuta del paese in cui sembra trovarsi l'utente. */
@@ -63,6 +66,8 @@ data class ConvertUiState(
     /** Risultato al netto della commissione, se ne è stata impostata una. */
     val withFeeText: String? = null,
     val markupPercent: BigDecimal = BigDecimal.ZERO,
+    val feeMode: FeeMode = FeeMode.CASH,
+    val quotationDates: Map<Currency, LocalDate?> = emptyMap(),
     val rate: BigDecimal? = null,
     val freshness: Freshness? = null,
     val age: Duration? = null,
@@ -85,7 +90,9 @@ class ConvertViewModel(
     private val detector: LocalCurrencyDetector,
 ) : ViewModel() {
 
-    private val input = MutableStateFlow("")
+    private val input = MutableStateFlow("1")
+    private var initialInput = true
+    private var restored = false
     private val activeField = MutableStateFlow(Field.FROM)
     private val refreshing = MutableStateFlow(false)
     private val message = MutableStateFlow<RefreshMessage?>(null)
@@ -97,6 +104,7 @@ class ConvertViewModel(
         val favourites: Set<Currency>,
         val dismissedCountry: String?,
         val markup: BigDecimal,
+        val feeMode: FeeMode,
     )
 
     private data class Data(
@@ -110,9 +118,9 @@ class ConvertViewModel(
         settings.quoteCurrency,
         settings.favourites,
         settings.dismissedCountry,
-        settings.markupPercent,
+        combine(settings.markupPercent, settings.feeMode) { percent, mode -> percent to mode },
     ) { base, quote, favourites, dismissed, markup ->
-        Preferences(base, quote, favourites.toSet(), dismissed, markup)
+        Preferences(base, quote, favourites.toSet(), dismissed, markup.first, markup.second)
     }
 
     private val data = combine(
@@ -139,6 +147,11 @@ class ConvertViewModel(
         viewModelScope.launch {
             // I tassi inclusi nell'APK vanno caricati prima di qualunque
             // tentativo di rete: la prima schermata non deve mai essere vuota.
+            val saved = settings.calculation.first()
+            input.value = saved.input
+            activeField.value = runCatching { Field.valueOf(saved.field) }.getOrDefault(Field.FROM)
+            initialInput = saved.initial
+            restored = true
             repository.ensureSeeded()
 
             // Il rilevamento legge dai servizi di sistema: fuori dal thread
@@ -147,25 +160,54 @@ class ConvertViewModel(
                 detector.detectLocal()?.code
             }
 
-            refreshIfStale()
+
         }
     }
 
+    private fun persistCalculation() {
+        val typed = input.value
+        val field = activeField.value.name
+        val initial = initialInput
+        viewModelScope.launch { settings.setCalculation(typed, field, initial) }
+    }
+
+    fun onPaste(field: Field, text: String, locale: java.util.Locale) {
+        val amount = AmountFormat.parse(text, locale)
+        if (amount == null) { message.value = RefreshMessage.InvalidPaste; return }
+        activeField.value = field
+        input.value = amount.toPlainString()
+        initialInput = false
+        persistCalculation()
+    }
+
+    fun onFeeModeChanged(mode: FeeMode) {
+        viewModelScope.launch { settings.setFeeMode(mode) }
+    }
+
     fun onKey(key: KeypadKey) {
+        if (!restored) return
+        if (initialInput && key is KeypadKey.Symbol && (key.value.isDigit() || key.value in ".,")) input.value = ""
+        initialInput = false
         when (key) {
             is KeypadKey.Symbol -> append(key.value)
             KeypadKey.Backspace -> input.value = input.value.dropLast(1)
             KeypadKey.Clear -> input.value = ""
             KeypadKey.Equals -> collapseToResult()
         }
+        persistCalculation()
     }
 
     fun onFieldSelected(field: Field) {
         if (activeField.value == field) return
-        // Passando all'altro campo il testo riparte: si sta per digitare un
-        // importo nuovo, non per continuare il calcolo precedente.
+        val current = state.value
+        val amount = (Expression.evaluate(input.value) as? Expression.Result.Value)?.amount
+        val converted = if (amount != null && current.rate != null) {
+            Fees.convert(amount, current.rate, current.markupPercent, current.feeMode, inverse = activeField.value == Field.TO)
+        } else null
         activeField.value = field
-        input.value = ""
+        input.value = converted?.stripTrailingZeros()?.toPlainString().orEmpty()
+        initialInput = false
+        persistCalculation()
     }
 
     fun onCurrencySelected(field: Field, currency: Currency) {
@@ -226,14 +268,15 @@ class ConvertViewModel(
         }
     }
 
-    fun onRefresh() {
+    fun onRefresh(required: Set<Currency>? = null) {
         if (refreshing.value) return
         viewModelScope.launch {
             refreshing.value = true
-            message.value = when (val result = repository.refresh()) {
+            message.value = when (val result = repository.refresh(required ?: setOf(state.value.from, state.value.to))) {
                 is RefreshResult.Updated -> RefreshMessage.Updated(result.provider)
                 is RefreshResult.Failed -> RefreshMessage.Failed
                 RefreshResult.SkippedOffline -> RefreshMessage.Offline
+                is RefreshResult.Blocked -> if (result.reason == it.bbnss.moneta.core.model.NetworkBlock.WIFI) RefreshMessage.Wifi else RefreshMessage.Failed
             }
             refreshing.value = false
         }
@@ -241,19 +284,6 @@ class ConvertViewModel(
 
     fun onMessageShown() {
         message.value = null
-    }
-
-    /**
-     * Aggiorna solo se serve.
-     *
-     * Aprire il convertitore cinque secondi al mercato non deve costare una
-     * richiesta di rete: in roaming il traffico si paga, e i tassi di
-     * riferimento cambiano una volta al giorno.
-     */
-    private suspend fun refreshIfStale() {
-        if (settings.offlineMode.first()) return
-        val age = repository.ageOfNewestData()
-        if (age == null || age > Duration.ofHours(6)) onRefresh()
     }
 
     private fun append(symbol: Char) {
@@ -287,8 +317,9 @@ class ConvertViewModel(
         isRefreshing: Boolean,
         lastMessage: RefreshMessage?,
     ): ConvertUiState {
-        val (rates, prefs, country) = current
-        val (base, quote, favourites, dismissed, markup) = prefs
+        val (allRates, prefs, country) = current
+        val (base, quote, favourites, dismissed, markup, mode) = prefs
+        val rates = allRates.forPair(base, quote)
         val snapshot = rates.snapshot
         val evaluated = Expression.evaluate(typed)
 
@@ -298,7 +329,9 @@ class ConvertViewModel(
         val targetCurrency = if (field == Field.FROM) quote else base
 
         val converted = if (amount != null && snapshot != null) {
-            snapshot.convert(amount, sourceCurrency, targetCurrency)
+            snapshot.crossRate(base, quote)?.let { rate ->
+                Fees.convert(amount, rate, markup, mode, inverse = field == Field.TO)
+            }
         } else {
             null
         }
@@ -311,19 +344,7 @@ class ConvertViewModel(
 
         val convertedText = converted?.let { AmountFormat.format(it, targetCurrency) }.orEmpty()
 
-        // La commissione riduce quello che si riceve davvero: il tasso di
-        // riferimento non è mai quello che dà lo sportello.
-        val withFee = if (markup.signum() > 0 && converted != null) {
-            val factor = BigDecimal.ONE.subtract(
-                markup.divide(BigDecimal(100), MonetaryMath.CONTEXT),
-            )
-            AmountFormat.format(
-                converted.multiply(factor, MonetaryMath.CONTEXT),
-                targetCurrency,
-            )
-        } else {
-            null
-        }
+        val withFee: String? = null
 
         val error = when {
             evaluated is Expression.Result.Invalid &&
@@ -332,8 +353,8 @@ class ConvertViewModel(
 
             // La coppia non è coperta dalla fonte: succede davvero, per esempio
             // chiedendo il dong alla Banca Centrale Europea.
-            snapshot != null && amount != null && converted == null ->
-                ConvertError.UnsupportedPair(snapshot.provider)
+            allRates.snapshots.isNotEmpty() && amount != null && converted == null ->
+                ConvertError.UnsupportedPair(rates.preferredProvider)
 
             else -> null
         }
@@ -347,18 +368,20 @@ class ConvertViewModel(
             toText = if (field == Field.TO) typedText else convertedText,
             withFeeText = withFee,
             markupPercent = markup,
+            feeMode = mode,
+            quotationDates = snapshot?.datesFor(base, quote).orEmpty(),
             rate = snapshot?.crossRate(base, quote),
             freshness = rates.freshness,
             age = rates.age,
             updatedAt = snapshot?.fetchedAt,
-            rateDate = snapshot?.rateDate,
+            rateDate = snapshot?.dateFor(base, quote),
             provider = snapshot?.provider,
             preferredProvider = rates.preferredProvider,
             substituted = rates.substituted,
             error = error,
             refreshing = isRefreshing,
             message = lastMessage,
-            availableCurrencies = snapshot?.currencies?.sortedBy { it.code }.orEmpty(),
+            availableCurrencies = allRates.snapshots.flatMap { it.currencies }.distinct().sortedBy { it.code },
             favourites = favourites,
             suggestion = suggestionFor(country, dismissed, base, quote, rates),
         )

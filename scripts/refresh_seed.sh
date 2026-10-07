@@ -21,12 +21,14 @@ echo "Scarico i tassi da $SRC"
 curl -sS --fail --max-time 30 "$SRC" \
   | python3 -c '
 import json, sys, datetime
+from decimal import Decimal
 
-rows = json.load(sys.stdin)
+rows = json.load(sys.stdin, parse_float=Decimal, parse_int=Decimal)
 if not rows:
     sys.exit("Risposta vuota: seed non aggiornato")
 
 rates = {}
+dates = {}
 latest = ""
 for row in rows:
     quote, rate, date = row.get("quote"), row.get("rate"), row.get("date", "")
@@ -34,7 +36,8 @@ for row in rows:
         continue
     # Il tasso viene tenuto come stringa: il denaro non passa mai da un float,
     # nemmeno qui.
-    rates[quote] = repr(rate) if not isinstance(rate, str) else rate
+    rates[quote] = str(rate)
+    if date: dates[quote] = date
     latest = max(latest, date)
 
 if len(rates) < 50:
@@ -48,6 +51,7 @@ json.dump(
         "generatedAt": datetime.datetime.now(datetime.timezone.utc)
             .replace(microsecond=0).isoformat().replace("+00:00", "Z"),
         "rates": dict(sorted(rates.items())),
+        "rateDates": dict(sorted(dates.items())),
     },
     sys.stdout,
     indent=1,

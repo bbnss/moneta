@@ -24,7 +24,7 @@ enum class ProviderId(val stableId: Int, val displayName: String) {
     BANK_ROSSII(8, "Bank Rossii"),
 
     /** Istanza self-hosted configurata dall'utente (API compatibile Frankfurter). */
-    CUSTOM(99, "Self-hosted endpoint"),
+    CUSTOM(99, "CUSTOM"),
     ;
 
     companion object {
