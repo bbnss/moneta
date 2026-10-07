@@ -166,4 +166,5 @@
     <string name="cash_remove">Remove a %1$s banknote</string>
     <string name="cash_reset">Reset counts</string>
     <string name="cash_total">Total: %1$s %2$s\n%3$s %4$s</string>
+    <string name="board_reorder_hint">Hold and drag a row, or use the up/down arrows.</string>
 </resources>

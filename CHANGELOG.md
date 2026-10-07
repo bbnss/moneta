@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0-rc.2]
+
+- Fix favourite dragging: the normal row long-press no longer competes with the reorder gesture. Show a dedicated reorder hint.
+- Increment versionCode to 5 so the published rc.1 can be updated with the same Moneta signature.
+
 ## [0.2.0-rc.1] — rates, compact conversion and banknotes
 
 - Preserve each quotation date through providers, Room schema 2 and offline seed. Cross-rates use the oldest necessary date; verification time is separate.

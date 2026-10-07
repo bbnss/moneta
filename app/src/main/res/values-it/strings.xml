@@ -168,4 +168,5 @@
     <string name="cash_remove">Togli una banconota da %1$s</string>
     <string name="cash_reset">Azzera conteggio</string>
     <string name="cash_total">Totale: %1$s %2$s\n%3$s %4$s</string>
+    <string name="board_reorder_hint">Tieni premuta e trascina una riga, oppure usa le frecce su/giù.</string>
 </resources>

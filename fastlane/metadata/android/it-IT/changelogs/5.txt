@@ -1,0 +1,1 @@
+Corretto il trascinamento dei preferiti in Riordina. Build firmata di prova con codice versione 5, aggiornabile dalla rc.1.

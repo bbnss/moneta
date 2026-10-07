@@ -1,0 +1,1 @@
+Fix favourite dragging in reorder mode. Signed test build with version code 5, compatible with rc.1.

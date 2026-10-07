@@ -125,6 +125,7 @@ fun BoardScreen(
                     } else Modifier), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) { BoardRowItem(
                         row = row,
+                        reordering = reordering,
                         setAsBaseLabel = stringResource(
                             R.string.board_set_as_base,
                             row.currency.code,
@@ -158,7 +159,7 @@ fun BoardScreen(
 
                 item {
                     Text(
-                        text = stringResource(R.string.board_base_hint),
+                        text = stringResource(if (reordering) R.string.board_reorder_hint else R.string.board_base_hint),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(vertical = 12.dp),
@@ -273,6 +274,7 @@ private fun BaseAmountRow(
 @Composable
 private fun BoardRowItem(
     row: BoardRow,
+    reordering: Boolean,
     setAsBaseLabel: String,
     onLongPress: () -> Unit,
 ) {
@@ -282,11 +284,11 @@ private fun BoardRowItem(
             // Tenere premuto promuove la valuta a base: è il gesto per
             // invertire la domanda ("e il contrario quanto fa?") senza
             // ridigitare l'importo.
-            .combinedClickable(onClick = {}, onLongClick = onLongPress)
+            .then(if (reordering) Modifier else Modifier.combinedClickable(onClick = {}, onLongClick = onLongPress))
             // Una pressione prolungata è invisibile a chi usa TalkBack:
             // dichiararla come azione le dà un nome e la rende raggiungibile.
             .semantics {
-                customActions = listOf(
+                customActions = if (reordering) emptyList() else listOf(
                     CustomAccessibilityAction(setAsBaseLabel) {
                         onLongPress()
                         true

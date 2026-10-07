@@ -1,4 +1,4 @@
-# Verifica Moneta 0.2.0 rc.1
+# Verifica Moneta 0.2.0 rc.2
 
 ## Verifiche automatiche
 
@@ -20,10 +20,12 @@
 
 APK release installato con minificazione e resource shrinking attivi. Controllati italiano/inglese, schermi 360×640 e 412×915 dp, testo 130%, tastierino numerico/calcolatrice, ripristino dell’espressione dopo force-stop, temi, avviso offline, riordino e conteggio dei tagli. Nella vista numerica standard i due importi e la commissione restano visibili senza scorrere, anche a 360×640 con testo 130%. Le schermate temporanee di verifica non sostituiscono i materiali store, che saranno rifatti dopo il riscontro positivo.
 
+Prova di regressione del trascinamento: `python3 scripts/check_reorder.py` su emulatore di prova con almeno tre preferiti visibili. Controlla che il gesto cambi l’ordine, conservi le valute e la base, e che l’ordine torni dopo force-stop. La rc.2 elimina il conflitto fra il gesto di riordino e la normale pressione prolungata della riga.
+
 ## Build e firma
 
-Pacchetto `it.bbnss.moneta`, versione `0.2.0`, codice `4`. APK e AAB firmati dalla chiave locale Moneta. Certificati confrontati con apksigner e keytool; AAB verificato con jarsigner. Le password non vengono pubblicate. Provenienza del commit e checksum sono negli allegati della prerelease.
+Pacchetto `it.bbnss.moneta`, versione `0.2.0`, codice `5`. APK e AAB firmati dalla chiave locale Moneta. Certificati confrontati con apksigner e keytool; AAB verificato con jarsigner. Le password non vengono pubblicate. Provenienza del commit e checksum sono negli allegati della prerelease.
 
 R8 è fissato a 9.1.29, versione compatibile con Kotlin 2.4, tramite il repository ufficiale. I precedenti avvisi sui metadati Kotlin sono risolti. Rimangono avvisi R8 relativi al parsing asincrono non supportato dal provider AGP e avvisi lint sulle versioni delle dipendenze: non sono errori di compilazione. [Compatibilità Kotlin/R8](https://developer.android.com/build/kotlin-support), [repository R8](https://r8.googlesource.com/r8/+/refs/heads/main/README.md).
 
-La firma del vecchio APK GitHub 0.1.1 è Android Debug e differisce da questa chiave Moneta. La compatibilità con installazioni Play non è stata verificata. Le istruzioni complete sono in [RELEASE_0.2.0-rc.1.md](RELEASE_0.2.0-rc.1.md).
+La firma del vecchio APK GitHub 0.1.1 è Android Debug e differisce da questa chiave Moneta. La compatibilità con installazioni Play non è stata verificata. Le istruzioni complete sono in [RELEASE_0.2.0-rc.2.md](RELEASE_0.2.0-rc.2.md).

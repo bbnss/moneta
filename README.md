@@ -61,7 +61,7 @@ Requires JDK 21 and the Android SDK (compileSdk 36).
 ./gradlew :core:data:connectedDebugAndroidTest  # Room/DataStore on an emulator
 ```
 
-Release candidates and installation/signature notes: [0.2.0 rc.1](docs/RELEASE_0.2.0-rc.1.md). [Verification record](docs/VERIFICATION_0.2.0.md).
+Release candidates and installation/signature notes: [0.2.0 rc.2](docs/RELEASE_0.2.0-rc.2.md). [Verification record](docs/VERIFICATION_0.2.0.md).
 
 ## Contributing
 
