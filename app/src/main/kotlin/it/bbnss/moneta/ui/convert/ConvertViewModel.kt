@@ -63,8 +63,8 @@ data class ConvertUiState(
     val input: String = "",
     val fromText: String = "",
     val toText: String = "",
-    /** Risultato al netto della commissione, se ne è stata impostata una. */
-    val withFeeText: String? = null,
+    /** Valore della seconda valuta senza commissione, per lo stesso importo di partenza. */
+    val withoutFeeText: String? = null,
     val markupPercent: BigDecimal = BigDecimal.ZERO,
     val feeMode: FeeMode = FeeMode.CASH,
     val quotationDates: Map<Currency, LocalDate?> = emptyMap(),
@@ -325,16 +325,16 @@ class ConvertViewModel(
 
         val amount = (evaluated as? Expression.Result.Value)?.amount
 
-        val sourceCurrency = if (field == Field.FROM) base else quote
         val targetCurrency = if (field == Field.FROM) quote else base
 
-        val converted = if (amount != null && snapshot != null) {
+        val amounts = if (amount != null && snapshot != null) {
             snapshot.crossRate(base, quote)?.let { rate ->
-                Fees.convert(amount, rate, markup, mode, inverse = field == Field.TO)
+                Fees.amounts(amount, rate, markup, mode, inverse = field == Field.TO)
             }
         } else {
             null
         }
+        val converted = if (field == Field.FROM) amounts?.quote else amounts?.base
 
         val typedText = when {
             typed.isEmpty() -> ""
@@ -344,7 +344,9 @@ class ConvertViewModel(
 
         val convertedText = converted?.let { AmountFormat.format(it, targetCurrency) }.orEmpty()
 
-        val withFee: String? = null
+        val withoutFee = if (markup.signum() != 0) {
+            amounts?.quoteWithoutFee?.let { AmountFormat.format(it, quote) }
+        } else null
 
         val error = when {
             evaluated is Expression.Result.Invalid &&
@@ -366,7 +368,7 @@ class ConvertViewModel(
             input = typed,
             fromText = if (field == Field.FROM) typedText else convertedText,
             toText = if (field == Field.TO) typedText else convertedText,
-            withFeeText = withFee,
+            withoutFeeText = withoutFee,
             markupPercent = markup,
             feeMode = mode,
             quotationDates = snapshot?.datesFor(base, quote).orEmpty(),

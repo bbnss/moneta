@@ -22,8 +22,8 @@ android {
         applicationId = "it.bbnss.moneta"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        // Codes 2/3 were used by 0.1.1; code 4 was published in 0.2.0-rc.1.
-        versionCode = 5
+        // Codes 4/5 were published in the 0.2.0 release candidates.
+        versionCode = 6
         versionName = "0.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

@@ -10,8 +10,8 @@ The rate date is separate from the time the provider was checked. A cross-rate u
 Moneta tries other sources when a provider fails or lacks your currencies. Each conversion uses a complete snapshot from one source. Choose automatic intervals, manual-only, Wi-Fi-only or offline mode. Wi-Fi-only also applies to manual requests. A compatible self-hosted Frankfurter v2 endpoint can be saved and verified separately.
 
 <b>Made for travel</b>
-• Compact numeric keypad; expand the calculator for expressions
-• Cash exchange fees reduce what you receive; card fees increase the cost
+• Calculator available by default; switch to the compact numeric keypad
+• Cash exchange fees reduce what you receive; card fees increase the cost. Compare amounts with and without fees
 • Copy and paste amounts in your app language
 • Saved amounts, expressions and active field
 • Favourite currencies in your own order, with dragging and accessible move controls

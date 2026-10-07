@@ -1,4 +1,16 @@
-# Verifica Moneta 0.2.0 rc.2
+# Verifica Moneta 0.2.0
+
+## Build finale — codice 6
+
+- `./gradlew test lint assembleRelease bundleRelease --max-workers=2`: completato. 120 test JVM distinti, nessun fallimento, lint senza errori; rimangono avvisi già descritti sotto.
+- Nuovo test del confronto commissioni: per 100 con tasso 1,2, riferimento 120, contanti al 5% 114 e carta al 5% 126; il confronto mantiene lo stesso importo di partenza anche modificando il secondo campo.
+- APK release con shrinking installato e verificato prima della pubblicazione. Italiano e inglese, 360×640 e 412×915 dp, testo 130%. Importi con e senza commissione e controllo percentuale visibili insieme. Sulla calcolatrice degli schermi piccoli tutti gli operatori sono mantenuti in quattro righe, con bersagli tattili di almeno 48 dp.
+- Verificati passaggio calcolatrice/tastierino, scambio delle valute a sinistra tra i campi, importi contanti/carta e formula inversa nella build reale. Calcolatrice compatta: `2×(3+4)=14`, espressione conservata dopo force-stop. Dialogo commissioni scorrevole, con Salva accessibile anche a 360×640 dp e testo 130%. Geometria e scala del testo dell’emulatore ripristinate.
+- Certificato APK verificato con apksigner; firma e versione dell’AAB controllate con jarsigner, keytool e bundletool. Stesso certificato Moneta, pacchetto `it.bbnss.moneta`, versione `0.2.0`, codice `6`.
+- Controllati file modificati e contenuto degli archivi APK/AAB: nessuna password locale di firma, chiave privata, token o percorso personale trovato. Keystore e proprietà locali sono ignorati da Git. I log e le schermate di prova restano temporanei e non sono allegati alla release.
+- Release GitHub normale `v0.2.0`, APK pubblico con checksum e provenienza. AAB conservato localmente per Play; nessun caricamento su Play.
+
+## Verifiche delle precedenti rc
 
 ## Verifiche automatiche
 

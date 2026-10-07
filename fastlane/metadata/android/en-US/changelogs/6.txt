@@ -1,0 +1,1 @@
+Calculator on the opening screen, currency swap on the left between fields, and amounts with and without fees shown together. Per-currency rate dates, coverage-aware fallback, saved amounts, ordered favourites and banknote counting.

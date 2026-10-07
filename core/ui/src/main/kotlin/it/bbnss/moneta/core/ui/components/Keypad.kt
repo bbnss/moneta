@@ -45,7 +45,7 @@ sealed interface KeypadKey {
  * delle valute si scrive solo una cifra e si guarda l'elenco. Dare a entrambe
  * la stessa tastiera significa rubare mezzo schermo a chi non ne ha bisogno.
  */
-enum class KeypadLayout { CALCULATOR, NUMERIC }
+enum class KeypadLayout { CALCULATOR, CALCULATOR_COMPACT, NUMERIC }
 
 /**
  * Altezza dei tasti adatta allo schermo su cui si sta girando.
@@ -118,7 +118,22 @@ fun MonetaKeypad(
             ),
         )
 
-        // Tre colonne come su un tastierino telefonico, senza operatori: si
+        // Tutte le funzioni della calcolatrice, in quattro righe sui telefoni bassi.
+        KeypadLayout.CALCULATOR_COMPACT -> listOf(
+            listOf(Key.Digit('7'), Key.Digit('8'), Key.Digit('9'),
+                Key.Action("(", KeypadKey.Symbol('('), KeyKind.MODIFIER),
+                Key.Action(")", KeypadKey.Symbol(')'), KeyKind.MODIFIER)),
+            listOf(Key.Digit('4'), Key.Digit('5'), Key.Digit('6'),
+                Key.Action("÷", KeypadKey.Symbol('÷'), KeyKind.OPERATOR),
+                Key.Action("×", KeypadKey.Symbol('×'), KeyKind.OPERATOR)),
+            listOf(Key.Digit('1'), Key.Digit('2'), Key.Digit('3'),
+                Key.Action("−", KeypadKey.Symbol('-'), KeyKind.OPERATOR),
+                Key.Action("+", KeypadKey.Symbol('+'), KeyKind.OPERATOR)),
+            listOf(clear, Key.Digit('0'), decimal, backspace,
+                Key.Action("=", KeypadKey.Equals, KeyKind.PRIMARY, equalsDescription)),
+        )
+
+        // Quattro colonne, senza operatori: si
         // digita un importo e basta. Una riga in meno e tasti più bassi
         // liberano un terzo dello schermo per l'elenco delle valute.
         KeypadLayout.NUMERIC -> listOf(

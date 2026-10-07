@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-10-07
+
+- Open Convert with the calculator; allow switching to the compact numeric keypad.
+- Place the currency swap button on the left between the two amount fields.
+- Show the result with the fee and the reference amount without the fee together, including inverse editing. Keep the fee control separate from result labels.
+- Include all rate, cache, update, favourite and banknote improvements described in the release candidates below.
+- Version code 6, same Moneta signing certificate. Publish a normal GitHub release with the signed APK and checksum so Obtainium can find it with default prerelease settings; keep the AAB local for Play.
+
 ## [0.2.0-rc.2]
 
 - Fix favourite dragging: the normal row long-press no longer competes with the reorder gesture. Show a dedicated reorder hint.
@@ -97,6 +105,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rounding happens only when formatting for display, following each currency's ISO 4217
   minor units.
 
-[Unreleased]: https://github.com/bbnss/moneta/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/bbnss/moneta/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/bbnss/moneta/releases/tag/v0.2.0
 [0.1.1]: https://github.com/bbnss/moneta/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/bbnss/moneta/releases/tag/v0.1.0

@@ -103,7 +103,7 @@
 
     <!-- Commissione di carta o cambiavalute -->
     <string name="markup_label">Commissione</string>
-    <string name="markup_explain">Cambio contanti riduce quanto ricevi. Pagamento carta aumenta il costo. Il risultato principale include la commissione.</string>
+    <string name="markup_explain">Cambio contanti sottrae la commissione dall’importo che ricevi. Pagamento carta la aggiunge al costo. Nel secondo campo vedi il risultato con commissione e il confronto senza commissione.</string>
     <string name="markup_none">Nessuna</string>
     <string name="markup_save">Salva</string>
     <string name="markup_cancel">Annulla</string>
@@ -144,6 +144,8 @@
     <string name="fee_card">Pagamento carta</string>
     <string name="fee_receive">Ricevi</string>
     <string name="fee_cost">Costo con carta</string>
+    <string name="fee_percent">Commissione: %1$s%%</string>
+    <string name="fee_without">Senza commissione: %1$s %2$s</string>
     <string name="reference_rate">Riferimento: 1 %1$s = %2$s %3$s</string>
     <string name="keypad_calculator">Calcolatrice</string>
     <string name="keypad_numeric">Tastierino numerico</string>

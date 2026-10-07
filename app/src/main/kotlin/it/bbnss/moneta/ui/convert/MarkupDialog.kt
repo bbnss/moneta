@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
@@ -15,9 +17,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import it.bbnss.moneta.R
+import it.bbnss.moneta.core.model.AmountFormat
 import java.math.BigDecimal
 
 /**
@@ -43,12 +47,13 @@ fun MarkupDialog(
     }
     var selected by remember { mutableStateOf(current) }
     var selectedMode by remember { mutableStateOf(mode) }
+    val locale = LocalConfiguration.current.locales[0]
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.markup_label)) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 it.bbnss.moneta.core.model.FeeMode.entries.forEach { option ->
                     FilterChip(selected = selectedMode == option, onClick = { selectedMode = option },
                         label = { Text(stringResource(if (option == it.bbnss.moneta.core.model.FeeMode.CASH) R.string.fee_cash else R.string.fee_card)) })
@@ -67,7 +72,7 @@ fun MarkupDialog(
                                     if (option.signum() == 0) {
                                         stringResource(R.string.markup_none)
                                     } else {
-                                        "${option.stripTrailingZeros().toPlainString()}%"
+                                        "${AmountFormat.formatRate(option, locale)}%"
                                     },
                                 )
                             },

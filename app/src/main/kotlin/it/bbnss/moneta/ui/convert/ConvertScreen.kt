@@ -2,6 +2,7 @@ package it.bbnss.moneta.ui.convert
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,8 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import it.bbnss.moneta.R
 import it.bbnss.moneta.core.model.*
@@ -50,9 +54,12 @@ fun ConvertScreen(
     var pickerFor by remember { mutableStateOf<Field?>(null) }
     var showDetails by remember { mutableStateOf(false) }
     var showMarkup by remember { mutableStateOf(false) }
-    var calculator by rememberSaveable { mutableStateOf(false) }
+    var calculator by rememberSaveable { mutableStateOf(true) }
+    var firstRowHeight by remember { mutableIntStateOf(0) }
+    val density = LocalDensity.current
     val clipboard = LocalClipboardManager.current
-    val locale = LocalConfiguration.current.locales[0]
+    val configuration = LocalConfiguration.current
+    val locale = configuration.locales[0]
     LaunchedEffect(state.input) {
         if (state.input.isNotEmpty() && !Expression.isPlainNumber(state.input)) calculator = true
     }
@@ -64,22 +71,31 @@ fun ConvertScreen(
     Column(modifier.fillMaxSize()) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 12.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            AmountRow(state.from, state.fromText, state.activeField == Field.FROM,
-                onFieldClick = { onFieldSelected(Field.FROM) }, onCurrencyClick = { pickerFor = Field.FROM },
-                onCopy = { clipboard.setText(AnnotatedString(state.fromText.ifEmpty { "0" })) },
-                onPaste = { onPaste(Field.FROM, clipboard.getText()?.text.orEmpty(), locale) },
-                onClear = { onFieldSelected(Field.FROM); onKey(KeypadKey.Clear) })
-            AmountRow(state.to, state.toText, state.activeField == Field.TO,
-                onFieldClick = { onFieldSelected(Field.TO) }, onCurrencyClick = { pickerFor = Field.TO },
-                onCopy = { clipboard.setText(AnnotatedString(state.toText.ifEmpty { "0" })) },
-                onPaste = { onPaste(Field.TO, clipboard.getText()?.text.orEmpty(), locale) },
-                onClear = { onFieldSelected(Field.TO); onKey(KeypadKey.Clear) })
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onClick = { showMarkup = true }, modifier = Modifier.weight(1f)) {
-                    Text(stringResource(if (state.feeMode == FeeMode.CASH) R.string.fee_receive else R.string.fee_cost) +
-                        " · " + stringResource(R.string.markup_label) + " ${state.markupPercent.stripTrailingZeros().toPlainString()}%")
+            Box {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    AmountRow(state.from, state.fromText, state.activeField == Field.FROM,
+                        onFieldClick = { onFieldSelected(Field.FROM) }, onCurrencyClick = { pickerFor = Field.FROM },
+                        onCopy = { clipboard.setText(AnnotatedString(state.fromText.ifEmpty { "0" })) },
+                        onPaste = { onPaste(Field.FROM, clipboard.getText()?.text.orEmpty(), locale) },
+                        onClear = { onFieldSelected(Field.FROM); onKey(KeypadKey.Clear) },
+                        modifier = Modifier.onSizeChanged { firstRowHeight = it.height })
+                    AmountRow(state.to, state.toText, state.activeField == Field.TO,
+                        onFieldClick = { onFieldSelected(Field.TO) }, onCurrencyClick = { pickerFor = Field.TO },
+                        onCopy = { clipboard.setText(AnnotatedString(state.toText.ifEmpty { "0" })) },
+                        onPaste = { onPaste(Field.TO, clipboard.getText()?.text.orEmpty(), locale) },
+                        onClear = { onFieldSelected(Field.TO); onKey(KeypadKey.Clear) },
+                        resultLabel = if (state.markupPercent.signum() != 0) {
+                            stringResource(if (state.feeMode == FeeMode.CASH) R.string.fee_receive else R.string.fee_cost)
+                        } else null,
+                        referenceText = state.withoutFeeText?.let {
+                            stringResource(R.string.fee_without, it, state.to.code)
+                        })
                 }
-                IconButton(onClick = onSwap) { Icon(Icons.Default.SwapVert, stringResource(R.string.convert_swap)) }
+                FilledTonalIconButton(onClick = onSwap, modifier = Modifier
+                    .offset(x = 8.dp, y = with(density) { firstRowHeight.toDp() } - 20.dp)
+                    .size(48.dp)) {
+                    Icon(Icons.Default.SwapVert, stringResource(R.string.convert_swap))
+                }
             }
             state.rate?.let { rate ->
                 Text(stringResource(R.string.reference_rate, state.from.code, AmountFormat.formatRate(rate), state.to.code),
@@ -92,11 +108,21 @@ fun ConvertScreen(
             }
             state.error?.let { Text(errorText(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
         }
-        TextButton(onClick = { calculator = !calculator }, modifier = Modifier.fillMaxWidth()) {
-            Text(stringResource(if (calculator) R.string.keypad_numeric else R.string.keypad_calculator))
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            TextButton(onClick = { showMarkup = true }, modifier = Modifier.weight(1f).heightIn(min = 48.dp)) {
+                Text(if (state.markupPercent.signum() == 0) stringResource(R.string.markup_label)
+                    else stringResource(R.string.fee_percent, AmountFormat.formatRate(state.markupPercent, locale)))
+            }
+            TextButton(onClick = { calculator = !calculator }, modifier = Modifier.weight(1f).heightIn(min = 48.dp)) {
+                Text(stringResource(if (calculator) R.string.keypad_numeric else R.string.keypad_calculator))
+            }
         }
         MonetaKeypad(onKey, Modifier.padding(bottom = 4.dp),
-            layout = if (calculator) KeypadLayout.CALCULATOR else KeypadLayout.NUMERIC,
+            layout = when {
+                !calculator -> KeypadLayout.NUMERIC
+                configuration.screenHeightDp < 700 -> KeypadLayout.CALCULATOR_COMPACT
+                else -> KeypadLayout.CALCULATOR
+            },
             keyHeight = 48.dp, decimalSeparator = DecimalFormatSymbols.getInstance(locale).decimalSeparator,
             clearLabel = stringResource(R.string.keypad_clear), backspaceDescription = stringResource(R.string.keypad_backspace),
             equalsDescription = stringResource(R.string.keypad_equals))
@@ -112,24 +138,36 @@ fun ConvertScreen(
 
 @Composable
 private fun AmountRow(currency: Currency, text: String, active: Boolean, onFieldClick: () -> Unit,
-                      onCurrencyClick: () -> Unit, onCopy: () -> Unit, onPaste: () -> Unit, onClear: () -> Unit) {
+                      onCurrencyClick: () -> Unit, onCopy: () -> Unit, onPaste: () -> Unit, onClear: () -> Unit,
+                      modifier: Modifier = Modifier, resultLabel: String? = null, referenceText: String? = null) {
     var menu by remember { mutableStateOf(false) }
     val colors = MaterialTheme.colorScheme
-    Surface(Modifier.fillMaxWidth().clickable(onClick = onFieldClick)
+    Surface(modifier.fillMaxWidth().clickable(onClick = onFieldClick)
         .then(if (active) Modifier.border(2.dp, colors.primary, RoundedCornerShape(16.dp)) else Modifier),
         shape = RoundedCornerShape(16.dp), color = if (active) colors.surfaceVariant else colors.surface) {
-        Row(Modifier.heightIn(min = 60.dp).padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-            TextButton(onClick = onCurrencyClick) {
-                Text("${CurrencyMetadata.flagOf(currency).orEmpty()} ${currency.code}", style = MaterialTheme.typography.titleMedium)
-            }
-            AmountText(text, Modifier.weight(1f))
-            Box {
-                IconButton(onClick = { menu = true }) { Icon(Icons.Default.MoreVert, stringResource(R.string.amount_actions)) }
-                DropdownMenu(menu, onDismissRequest = { menu = false }) {
-                    DropdownMenuItem(text = { Text(stringResource(R.string.amount_copy)) }, onClick = { onCopy(); menu = false })
-                    DropdownMenuItem(text = { Text(stringResource(R.string.amount_paste)) }, onClick = { onPaste(); menu = false })
-                    DropdownMenuItem(text = { Text(stringResource(R.string.board_clear_amount)) }, onClick = { onClear(); menu = false })
+        Column {
+            Row(Modifier.heightIn(min = 56.dp).padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                TextButton(onClick = onCurrencyClick) {
+                    Text("${CurrencyMetadata.flagOf(currency).orEmpty()} ${currency.code}", style = MaterialTheme.typography.titleMedium)
                 }
+                Column(Modifier.weight(1f).padding(vertical = 4.dp), horizontalAlignment = Alignment.End) {
+                    resultLabel?.let { Text(it, style = MaterialTheme.typography.labelSmall, color = colors.primary) }
+                    AmountText(text, Modifier.fillMaxWidth())
+                }
+                Box {
+                    IconButton(onClick = { menu = true }) { Icon(Icons.Default.MoreVert, stringResource(R.string.amount_actions)) }
+                    DropdownMenu(menu, onDismissRequest = { menu = false }) {
+                        DropdownMenuItem(text = { Text(stringResource(R.string.amount_copy)) }, onClick = { onCopy(); menu = false })
+                        DropdownMenuItem(text = { Text(stringResource(R.string.amount_paste)) }, onClick = { onPaste(); menu = false })
+                        DropdownMenuItem(text = { Text(stringResource(R.string.board_clear_amount)) }, onClick = { onClear(); menu = false })
+                    }
+                }
+            }
+            referenceText?.let {
+                Text(it, style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant,
+                    textAlign = TextAlign.End, maxLines = 1, modifier = Modifier.fillMaxWidth()
+                        .padding(start = 12.dp, end = 52.dp, bottom = 4.dp)
+                        .horizontalScroll(rememberScrollState()))
             }
         }
     }

@@ -10,8 +10,8 @@ La data del tasso è distinta dall’ora in cui la fonte è stata verificata. Un
 Moneta prova altre fonti se una non risponde o non copre le tue valute. Ogni conversione usa uno snapshot completo di una sola fonte. Scegli intervallo automatico, solo su richiesta, solo Wi-Fi o modalità offline. Il vincolo Wi-Fi vale anche per le richieste manuali. Puoi salvare e verificare separatamente un endpoint personale compatibile con Frankfurter v2.
 
 <b>Pensata per viaggiare</b>
-• Tastierino numerico compatto, espandibile in calcolatrice
-• Cambio contanti: la commissione riduce quanto ricevi; pagamento carta: aumenta il costo
+• Calcolatrice subito disponibile, con passaggio al tastierino numerico compatto
+• Cambio contanti: la commissione riduce quanto ricevi; pagamento carta: aumenta il costo. Importi con e senza commissione visibili insieme
 • Copia e incolla numeri nel formato della lingua dell’app
 • Importi, espressioni e campo attivo salvati
 • Preferiti nel tuo ordine, con trascinamento e comandi accessibili su/giù

@@ -48,6 +48,19 @@ class Release020Test {
             assertTrue(Fees.convert(result, BigDecimal("30366.38449315"), BigDecimal("2.5"), mode, true).subtract(amount).abs() < BigDecimal("0.00000001"))
         }
     }
+
+    @Test fun `fee comparison keeps the same base amount when editing either field`() {
+        val rate = BigDecimal("1.2")
+        for ((mode, expectedQuote) in listOf(FeeMode.CASH to "114", FeeMode.CARD to "126")) {
+            for (inverse in listOf(false, true)) {
+                val entered = BigDecimal(if (inverse) expectedQuote else "100")
+                val totals = Fees.amounts(entered, rate, BigDecimal("5"), mode, inverse)
+                assertEquals(0, BigDecimal("100").compareTo(totals.base))
+                assertEquals(0, BigDecimal(expectedQuote).compareTo(totals.quote))
+                assertEquals(0, BigDecimal("120").compareTo(totals.quoteWithoutFee))
+            }
+        }
+    }
     @Test fun `moving favourites skips hidden base and retains it in stored order`() {
         val original = listOf(Currency("CNY"), Currency.EUR, Currency.GBP, Currency.USD)
         val moved = FavouriteOrder.move(original, Currency("CNY"), Currency.EUR, 1)

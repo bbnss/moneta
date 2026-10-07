@@ -22,7 +22,7 @@ Every currency app fails on at least one of these:
 - Multi-currency board: one amount, favourites in your saved order, with drag and accessible move controls
 - Cash table and banknote counter: independent Home/Local pair, counts saved per local currency, totals in both currencies
 - Automatic local-currency detection with no location permission
-- Historical charts; cash exchange fees reduce what you receive, card fees increase the cost; compact keypad with optional calculator
+- Historical charts; cash exchange fees reduce what you receive, card fees increase the cost; calculator by default with an optional numeric keypad; amounts shown with and without fees
 - Decimal arithmetic: BigDecimal with 16 significant digits and HALF_UP for intermediate operations, currency-aware display rounding
 - No ads, no trackers, no analytics, no Google Play Services. `INTERNET` is the only meaningful permission.
 
@@ -50,6 +50,10 @@ All free, all key-less. See [`docs/SPEC.md`](docs/SPEC.md) for the full list and
 
 Rates are reference rates. They are not what a bank or a bureau will actually give you — that is what the configurable markup is for.
 
+## Install with Obtainium
+
+Use `https://github.com/bbnss/moneta` as the GitHub source. Version 0.2.0 is a normal release and does not require enabling prereleases. Leave APK and release-title filters empty to select the single APK automatically. The AAB is kept locally for Play; it is not a GitHub download.
+
 ## Build
 
 Requires JDK 21 and the Android SDK (compileSdk 36).
@@ -61,7 +65,7 @@ Requires JDK 21 and the Android SDK (compileSdk 36).
 ./gradlew :core:data:connectedDebugAndroidTest  # Room/DataStore on an emulator
 ```
 
-Release candidates and installation/signature notes: [0.2.0 rc.2](docs/RELEASE_0.2.0-rc.2.md). [Verification record](docs/VERIFICATION_0.2.0.md).
+Download the signed APK from the [0.2.0 release](https://github.com/bbnss/moneta/releases/tag/v0.2.0). Installation and signature notes: [0.2.0](docs/RELEASE_0.2.0.md). [Verification record](docs/VERIFICATION_0.2.0.md).
 
 ## Contributing
 

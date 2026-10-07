@@ -101,7 +101,7 @@
 
     <!-- Card / exchange markup -->
     <string name="markup_label">Fee</string>
-    <string name="markup_explain">Cash exchange reduces the amount received. Card payment increases the cost. The main result includes the fee.</string>
+    <string name="markup_explain">Cash exchange subtracts the fee from the amount you receive. Card payment adds it to the cost. The second field shows the result with the fee and the comparison without the fee.</string>
     <string name="markup_none">None</string>
     <string name="markup_save">Save</string>
     <string name="markup_cancel">Cancel</string>
@@ -142,6 +142,8 @@
     <string name="fee_card">Card payment</string>
     <string name="fee_receive">You receive</string>
     <string name="fee_cost">Cost with card</string>
+    <string name="fee_percent">Fee: %1$s%%</string>
+    <string name="fee_without">Without fee: %1$s %2$s</string>
     <string name="reference_rate">Reference: 1 %1$s = %2$s %3$s</string>
     <string name="keypad_calculator">Calculator</string>
     <string name="keypad_numeric">Numeric keypad</string>

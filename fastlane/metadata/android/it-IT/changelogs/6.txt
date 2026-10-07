@@ -1,0 +1,1 @@
+Calcolatrice nella schermata iniziale, scambio a sinistra tra le valute e importi con e senza commissione visibili insieme. Tassi con date per valuta, fallback con copertura, importi salvati, preferiti ordinabili e conta-banconote.

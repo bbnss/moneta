@@ -4,7 +4,21 @@ import java.math.BigDecimal
 
 enum class FeeMode { CASH, CARD }
 
+data class FeeAmounts(
+    val base: BigDecimal,
+    val quote: BigDecimal,
+    val quoteWithoutFee: BigDecimal,
+)
+
 object Fees {
+    /** Both totals describe the same base amount, including when the quote is edited. */
+    fun amounts(amount: BigDecimal, rate: BigDecimal, percent: BigDecimal, mode: FeeMode,
+                inverse: Boolean = false): FeeAmounts {
+        val base = if (inverse) convert(amount, rate, percent, mode, inverse = true) else amount
+        val quote = if (inverse) amount else convert(amount, rate, percent, mode)
+        return FeeAmounts(base, quote, base.multiply(rate, MonetaryMath.CONTEXT))
+    }
+
     fun factor(percent: BigDecimal, mode: FeeMode): BigDecimal {
         require(percent >= BigDecimal.ZERO && percent < BigDecimal("100"))
         val fraction = percent.divide(BigDecimal("100"), MonetaryMath.CONTEXT)
