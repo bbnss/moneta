@@ -15,9 +15,11 @@ Moneta tries other sources when a provider fails or lacks your currencies. Each 
 • Copy and paste amounts in your app language
 • Saved amounts, expressions and active field
 • Favourite currencies in your own order, with dragging and accessible move controls
-• Independent Home/Local cash pair, real banknote denominations and banknote counting
-• Counts saved per local currency; totals always available in both currencies
-• Historical charts and local-currency suggestions without location permission
+• Cash selectors follow the columns: Banknotes and Value in
+• Documented banknote catalogs for 32 currencies; clearly labelled example amounts elsewhere
+• Counts saved per banknote currency; totals always visible in both currencies
+• Copy selected exchange rates with dates and an app link
+• Historical charts with compact k/m labels, and local-currency suggestions without location permission
 
 <b>Decimal arithmetic</b>
 Amounts and rates use BigDecimal, with 16 significant digits and HALF_UP in intermediate operations, plus currency-aware display rounding. Repeating decimal results have finite precision. These are reference rates, not a promise of the amount a bank or bureau will charge.

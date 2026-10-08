@@ -20,7 +20,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
-import it.bbnss.moneta.core.model.AmountFormat
+import androidx.compose.ui.platform.LocalConfiguration
 import it.bbnss.moneta.core.model.RatePoint
 import java.time.format.DateTimeFormatter
 
@@ -46,9 +46,10 @@ fun RateChart(
 
     val colors = MaterialTheme.colorScheme
     val textMeasurer = rememberTextMeasurer()
+    val locale = LocalConfiguration.current.locales[0]
     val labelStyle = MaterialTheme.typography.labelSmall.copy(color = colors.onSurfaceVariant)
 
-    val values = points.map { it.rate.toDouble() }
+    val values = allPoints.map { it.rate.toDouble() }
     val minValue = values.min()
     val maxValue = values.max()
     // Un margine verticale evita che minimo e massimo tocchino i bordi, dove
@@ -56,6 +57,10 @@ fun RateChart(
     val padding = ((maxValue - minValue) * 0.12).takeIf { it > 0.0 } ?: (maxValue * 0.01 + 1e-9)
     val low = minValue - padding
     val high = maxValue + padding
+    val labels = (0..4).map { index ->
+        textMeasurer.measure(ChartRateFormat.format((high - (high - low) * index / 4).toBigDecimal(), locale),
+            labelStyle, maxLines = 1, softWrap = false)
+    }
 
     Column(modifier) {
         Canvas(
@@ -63,26 +68,26 @@ fun RateChart(
                 .fillMaxWidth()
                 .height(220.dp),
         ) {
-            val leftInset = 64.dp.toPx()
-            val bottomInset = 22.dp.toPx()
-            val plotWidth = size.width - leftInset
-            val plotHeight = size.height - bottomInset
+            val leftInset = labels.maxOf { it.size.width } + 16.dp.toPx()
+            val labelHeight = labels.maxOf { it.size.height }
+            val topInset = labelHeight / 2f + 2.dp.toPx()
+            val bottomInset = labelHeight + 8.dp.toPx()
+            val plotWidth = size.width - leftInset - 4.dp.toPx()
+            val plotHeight = size.height - bottomInset - topInset
 
             fun xAt(index: Int): Float =
                 leftInset + plotWidth * index / (points.size - 1).toFloat()
 
             fun yAt(value: Double): Float =
-                (plotHeight * (1 - (value - low) / (high - low))).toFloat()
+                topInset + (plotHeight * (1 - (value - low) / (high - low))).toFloat()
 
             drawGrid(
-                textMeasurer = textMeasurer,
-                labelStyle = labelStyle,
+                labels = labels,
                 gridColor = colors.outlineVariant,
                 leftInset = leftInset,
                 plotWidth = plotWidth,
                 plotHeight = plotHeight,
-                low = low,
-                high = high,
+                topInset = topInset,
             )
 
             val line = Path().apply {
@@ -97,8 +102,8 @@ fun RateChart(
             // d'occhio, che è il motivo per cui si guarda un grafico di cambio.
             val area = Path().apply {
                 addPath(line)
-                lineTo(xAt(points.size - 1), plotHeight)
-                lineTo(leftInset, plotHeight)
+                lineTo(xAt(points.size - 1), topInset + plotHeight)
+                lineTo(leftInset, topInset + plotHeight)
                 close()
             }
 
@@ -107,7 +112,7 @@ fun RateChart(
                 brush = Brush.verticalGradient(
                     listOf(colors.primary.copy(alpha = 0.28f), Color.Transparent),
                     startY = 0f,
-                    endY = plotHeight,
+                    endY = topInset + plotHeight,
                 ),
             )
 
@@ -130,7 +135,7 @@ fun RateChart(
                 points = points,
                 leftInset = leftInset,
                 plotWidth = plotWidth,
-                plotHeight = plotHeight,
+                plotHeight = topInset + plotHeight,
             )
         }
     }
@@ -150,22 +155,19 @@ private fun List<RatePoint>.downsampleTo(limit: Int): List<RatePoint> {
 }
 
 private fun DrawScope.drawGrid(
-    textMeasurer: TextMeasurer,
-    labelStyle: TextStyle,
+    labels: List<androidx.compose.ui.text.TextLayoutResult>,
     gridColor: Color,
     leftInset: Float,
     plotWidth: Float,
     plotHeight: Float,
-    low: Double,
-    high: Double,
+    topInset: Float,
 ) {
     val lines = 4
     val dashed = PathEffect.dashPathEffect(floatArrayOf(6f, 6f))
 
     for (index in 0..lines) {
         val fraction = index / lines.toFloat()
-        val y = plotHeight * fraction
-        val value = high - (high - low) * fraction
+        val y = topInset + plotHeight * fraction
 
         drawLine(
             color = gridColor,
@@ -175,8 +177,7 @@ private fun DrawScope.drawGrid(
             pathEffect = dashed,
         )
 
-        val label = AmountFormat.formatRate(value.toBigDecimal())
-        val measured = textMeasurer.measure(label, labelStyle)
+        val measured = labels[index]
         drawText(
             textLayoutResult = measured,
             topLeft = Offset(

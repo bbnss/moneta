@@ -14,11 +14,14 @@ import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 
-data class RateCardRow(val denomination: BigDecimal, val localText: String, val homeText: String, val count: Int = 0)
+data class RateCardRow(val denomination: BigDecimal, val localText: String, val homeText: String,
+                       val count: Int = 0, val documented: Boolean = true)
 data class RateCardUiState(
     val local: Currency = Currency.EUR,
     val home: Currency = Currency.USD,
     val rows: List<RateCardRow> = emptyList(),
+    val counterRows: List<RateCardRow> = emptyList(),
+    val catalog: Denominations.Catalog? = null,
     val estimated: Boolean = false,
     val rate: BigDecimal? = null,
     val provider: ProviderId? = null,
@@ -46,18 +49,18 @@ class RateCardViewModel(private val repository: RateRepository, private val sett
         val rates = allRates.forPair(local, home)
         val snapshot = rates.snapshot
         val rate = snapshot?.crossRate(local, home)
-        val denominations = Denominations.of(local, snapshot?.crossRate(home, local))
-        // Preserve counted denominations if estimated denominations change with the exchange rate.
-        val notes = (denominations + counts.filterValues { it > 0 }.keys).distinct().sorted()
-        val rows = notes.map { note ->
+        val cash = CashRows.build(Denominations.of(local), Denominations.illustrativeAmounts(local), counts)
+        fun row(note: BigDecimal, count: Int = 0, documented: Boolean = true) =
             RateCardRow(note, AmountFormat.format(note, local),
-                rate?.let { AmountFormat.format(note.multiply(it, MonetaryMath.CONTEXT), home) }.orEmpty(), counts[note] ?: 0)
-        }
-        val total = CashCounter.total(counts)
-        RateCardUiState(local, home, rows, !Denominations.areKnown(local), rate, snapshot?.provider,
-            snapshot?.dateFor(local, home), rates.freshness, rates.age, snapshot?.fetchedAt, rate != null,
-            allRates.snapshots.flatMap { it.currencies }.distinct().sortedBy { it.code }, favourites.toSet(),
-            AmountFormat.format(total, local), rate?.let { AmountFormat.format(total.multiply(it, MonetaryMath.CONTEXT), home) }.orEmpty())
+                rate?.let { AmountFormat.format(note.multiply(it, MonetaryMath.CONTEXT), home) }.orEmpty(), count, documented)
+        RateCardUiState(local = local, home = home, rows = cash.table.map { row(it) },
+            counterRows = cash.counter.map { row(it.value, it.count, it.documented) }, catalog = Denominations.catalog(local),
+            estimated = !Denominations.areKnown(local), rate = rate, provider = snapshot?.provider,
+            rateDate = snapshot?.dateFor(local, home), freshness = rates.freshness, age = rates.age,
+            updatedAt = snapshot?.fetchedAt, supported = rate != null,
+            availableCurrencies = (allRates.snapshots.flatMap { it.currencies } + local + home).distinct().sortedBy { it.code },
+            favourites = favourites.toSet(), totalLocal = AmountFormat.format(cash.total, local),
+            totalHome = rate?.let { AmountFormat.format(cash.total.multiply(it, MonetaryMath.CONTEXT), home) }.orEmpty())
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), RateCardUiState())
 
     fun onCurrencySelected(localField: Boolean, currency: Currency) { viewModelScope.launch {
@@ -67,6 +70,8 @@ class RateCardViewModel(private val repository: RateRepository, private val sett
     fun onSwap() { viewModelScope.launch { val (local, home) = settings.cashPair.first(); settings.setCashPair(home, local) } }
     fun onCount(note: BigDecimal, delta: Int) { viewModelScope.launch {
         val local = state.value.local
+        val documented = Denominations.of(local).any { it.compareTo(note) == 0 }
+        if (delta > 0 && !documented) return@launch
         settings.adjustCashCount(local, note, delta)
     } }
     fun onReset() { viewModelScope.launch { settings.resetCashCounts(state.value.local) } }

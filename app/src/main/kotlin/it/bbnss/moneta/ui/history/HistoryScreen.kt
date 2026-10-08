@@ -16,12 +16,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import it.bbnss.moneta.R
 import it.bbnss.moneta.core.data.SeriesResult
 import it.bbnss.moneta.core.providers.FailureReason
-import it.bbnss.moneta.core.model.AmountFormat
 import it.bbnss.moneta.core.model.HistoryRange
 import java.math.BigDecimal
 import java.time.format.DateTimeFormatter
@@ -108,9 +108,9 @@ fun HistoryScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    Statistic(stringResource(R.string.history_low), state.low)
-                    Statistic(stringResource(R.string.history_latest), state.latest)
-                    Statistic(stringResource(R.string.history_high), state.high)
+                    Statistic(stringResource(R.string.history_low), state.low, Modifier.weight(1f))
+                    Statistic(stringResource(R.string.history_latest), state.latest, Modifier.weight(1f))
+                    Statistic(stringResource(R.string.history_high), state.high, Modifier.weight(1f))
                 }
 
                 // Da dove arrivano questi numeri, e fin dove arrivano davvero.
@@ -148,15 +148,16 @@ private fun SourceLine(state: HistoryUiState) {
 }
 
 @Composable
-private fun Statistic(label: String, value: BigDecimal?) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+private fun Statistic(label: String, value: BigDecimal?, modifier: Modifier = Modifier) {
+    val locale = LocalConfiguration.current.locales[0]
+    Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = label,
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Text(
-            text = value?.let { AmountFormat.formatRate(it) } ?: "—",
+            text = value?.let { ChartRateFormat.format(it, locale) } ?: "—",
             style = MaterialTheme.typography.titleMedium,
         )
     }

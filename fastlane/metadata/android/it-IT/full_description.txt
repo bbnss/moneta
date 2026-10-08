@@ -15,9 +15,11 @@ Moneta prova altre fonti se una non risponde o non copre le tue valute. Ogni con
 • Copia e incolla numeri nel formato della lingua dell’app
 • Importi, espressioni e campo attivo salvati
 • Preferiti nel tuo ordine, con trascinamento e comandi accessibili su/giù
-• Coppia Casa/Locale indipendente, tabella dei tagli reali e conta-banconote
-• Conteggio conservato per valuta locale, totale sempre disponibile nelle due valute
-• Grafici storici e suggerimenti di valuta locale senza permesso di posizione
+• Selettori Contanti nello stesso ordine delle colonne: Banconote e Valore in
+• Cataloghi documentati per 32 valute; importi di esempio chiaramente indicati per le altre
+• Conteggio conservato per valuta delle banconote, totale sempre visibile nelle due valute
+• Copia dei cambi selezionati con date e link all’app
+• Grafici storici con valori compatti k/m e suggerimenti di valuta locale senza permesso di posizione
 
 <b>Aritmetica decimale</b>
 Importi e tassi usano BigDecimal, con 16 cifre significative e HALF_UP nei passaggi intermedi, più arrotondamento di visualizzazione adatto alla valuta. I risultati decimali periodici hanno precisione finita. I tassi sono di riferimento: non garantiscono la cifra applicata da banca o cambiavalute.

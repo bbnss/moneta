@@ -145,7 +145,7 @@ fun MonetaKeypad(
 
     Column(
         modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(if (layout == KeypadLayout.CALCULATOR_COMPACT) 6.dp else 8.dp),
     ) {
         rows.forEach { row ->
             Row(

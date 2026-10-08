@@ -73,12 +73,14 @@ fun ConvertScreen(
                     onCopy = { clipboard.setText(AnnotatedString(state.fromText.ifEmpty { "0" })) },
                     onPaste = { onPaste(Field.FROM, clipboard.getText()?.text.orEmpty(), locale) },
                     onClear = { onFieldSelected(Field.FROM); onKey(KeypadKey.Clear) })
-                Row(Modifier.fillMaxWidth().height(48.dp).padding(start = 8.dp),
+                Row(Modifier.fillMaxWidth().height(if (configuration.screenHeightDp < 700) 56.dp else 64.dp).padding(start = 4.dp),
                     verticalAlignment = Alignment.CenterVertically) {
-                    FilledTonalIconButton(onClick = onSwap,
-                        modifier = Modifier.width(64.dp).height(48.dp),
-                        shape = RoundedCornerShape(12.dp)) {
-                        Icon(Icons.Default.SwapVert, stringResource(R.string.convert_swap))
+                    Box(Modifier.width(96.dp), contentAlignment = Alignment.Center) {
+                        FilledTonalIconButton(onClick = onSwap,
+                            modifier = Modifier.width(64.dp).height(48.dp),
+                            shape = RoundedCornerShape(12.dp)) {
+                            Icon(Icons.Default.SwapVert, stringResource(R.string.convert_swap))
+                        }
                     }
                 }
                 AmountRow(state.to, state.toText, state.activeField == Field.TO,
@@ -140,10 +142,10 @@ private fun AmountRow(currency: Currency, text: String, active: Boolean, onField
     val colors = MaterialTheme.colorScheme
     Surface(modifier.fillMaxWidth().clickable(onClick = onFieldClick)
         .then(if (active) Modifier.border(2.dp, colors.primary, RoundedCornerShape(16.dp)) else Modifier),
-        shape = RoundedCornerShape(16.dp), color = if (active) colors.surfaceVariant else colors.surface) {
+        shape = RoundedCornerShape(16.dp), color = if (active) colors.surfaceVariant else colors.surfaceContainerLow) {
         Column {
             Row(Modifier.heightIn(min = 56.dp).padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onClick = onCurrencyClick) {
+                TextButton(onClick = onCurrencyClick, modifier = Modifier.width(96.dp)) {
                     Text("${CurrencyMetadata.flagOf(currency).orEmpty()} ${currency.code}", style = MaterialTheme.typography.titleMedium)
                 }
                 Column(Modifier.weight(1f).padding(vertical = 4.dp), horizontalAlignment = Alignment.End) {

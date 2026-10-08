@@ -123,10 +123,9 @@
 
     <!-- Travel rate card -->
     <string name="ratecard_subtitle">Reference rates, without fees.</string>
-    <string name="ratecard_estimated">Banknotes for %1$s are not in our list — these amounts are a reasonable guess.</string>
     <string name="ratecard_share">Share this table</string>
     <string name="ratecard_share_title">Exchange rate table</string>
-    <string name="ratecard_unsupported">%1$s does not publish a rate for this pair, so no table can be shown.</string>
+    <string name="ratecard_unsupported">No cached rate is available for this pair (%1$s). Converted values are unavailable.</string>
 
     <!-- Refresh -->
     <string name="refresh">Refresh rates</string>
@@ -160,13 +159,33 @@
     <string name="favourites_done">Done</string>
     <string name="favourites_up">Move up</string>
     <string name="favourites_down">Move down</string>
-    <string name="cash_home">Home: %1$s</string>
-    <string name="cash_local">Local: %1$s</string>
     <string name="cash_table">Table</string>
     <string name="cash_count">Count banknotes</string>
     <string name="cash_add">Add a %1$s banknote</string>
     <string name="cash_remove">Remove a %1$s banknote</string>
     <string name="cash_reset">Reset counts</string>
-    <string name="cash_total">Total: %1$s %2$s\n%3$s %4$s</string>
     <string name="board_reorder_hint">Hold and drag a row, or use the up/down arrows.</string>
+    <string name="board_copy_title">Exchange rates · Moneta</string>
+    <string name="board_copy_rate_date">Rate date</string>
+    <string name="board_copy_verified">Verified</string>
+    <string name="board_copy_unknown">Unknown</string>
+    <string name="cash_banknotes">Banknotes</string>
+    <string name="cash_value_in">Value in</string>
+    <string name="cash_note_header">Banknote · %1$s</string>
+    <string name="cash_amount_header">Example amount · %1$s</string>
+    <string name="cash_value_header">Value · %1$s</string>
+    <string name="cash_quantity">Quantity</string>
+    <string name="cash_quantity_description">Quantity for %1$s %2$s: %3$d</string>
+    <string name="cash_table_hint">Each %1$s banknote’s value in %2$s. Reference rates, without fees.</string>
+    <string name="cash_catalog_missing">A verified banknote catalog for %1$s is unavailable. The table shows example amounts, not banknotes. New counts are disabled.</string>
+    <string name="cash_saved_hint">Previous counts are preserved. Saved amounts outside the verified catalog can only be removed; they remain included in the total.</string>
+    <string name="cash_saved_note">Saved amount · outside verified catalog</string>
+    <string name="cash_saved_total">Includes saved amounts outside the verified catalog</string>
+    <string name="cash_count_total">Counted total</string>
+    <string name="cash_catalog_details">Banknote catalog and source</string>
+    <string name="cash_catalog_checked">Catalog checked: %1$s</string>
+    <string name="cash_catalog_scope">Documented denominations from the issuer. The list may omit older or commemorative series; it does not identify individual note designs.</string>
+    <string name="cash_catalog_source">Open source</string>
+    <string name="cash_indicative">Indicative amounts</string>
+    <string name="cash_indicative_hint">Example amounts in %1$s converted to %2$s. Reference rates, without fees.</string>
 </resources>

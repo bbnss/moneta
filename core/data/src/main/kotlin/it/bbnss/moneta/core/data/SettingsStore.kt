@@ -205,10 +205,15 @@ class SettingsStore internal constructor(private val store: DataStore<Preference
             val key = stringPreferencesKey("cash_counts_" + currency.code)
             val counts = prefs[key].orEmpty().split(';').mapNotNull { entry ->
                 val parts = entry.split(':')
-                if (parts.size == 2) parts[0] to parts[1] else null
-            }.toMap().toMutableMap()
-            val previous = counts[denomination.toPlainString()]?.toLongOrNull() ?: 0
-            counts[denomination.toPlainString()] = (previous + delta).coerceIn(0, Int.MAX_VALUE.toLong()).toString()
+                val note = parts.getOrNull(0)?.toBigDecimalOrNull()?.takeIf { it.signum() > 0 } ?: return@mapNotNull null
+                val count = parts.getOrNull(1)?.toLongOrNull()?.takeIf { it >= 0 } ?: return@mapNotNull null
+                note.stripTrailingZeros().toPlainString() to count.coerceAtMost(Int.MAX_VALUE.toLong())
+            }.groupBy({ it.first }, { it.second }).mapValues { (_, values) ->
+                values.fold(0L) { total, value -> (total + value).coerceAtMost(Int.MAX_VALUE.toLong()) }
+            }.toMutableMap()
+            val noteKey = denomination.stripTrailingZeros().toPlainString()
+            val previous = counts[noteKey] ?: 0
+            counts[noteKey] = (previous + delta).coerceIn(0, Int.MAX_VALUE.toLong())
             prefs[key] = counts.entries.joinToString(";") { it.key + ":" + it.value }
         }
     }

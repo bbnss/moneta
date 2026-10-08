@@ -5,6 +5,8 @@ import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import it.bbnss.moneta.core.data.db.MonetaDatabase
 import it.bbnss.moneta.core.model.Currency
 import it.bbnss.moneta.core.model.FeeMode
@@ -93,5 +95,31 @@ class Persistence020Test {
         assertTrue(seed.rates.size >= 50)
         assertEquals(seed.rates.keys, seed.rateDates.keys)
         assertNotNull(seed.dateFor(Currency.EUR, Currency.USD))
+    }
+
+    @Test fun cashCountsKeepCurrencyAndMergeLegacyFractionalKeys() = runBlocking {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val file = File(context.filesDir, "cash-022-${System.nanoTime()}.preferences_pb")
+        val job = SupervisorJob()
+        val store = PreferenceDataStoreFactory.create(scope = CoroutineScope(Dispatchers.IO + job), produceFile = { file })
+        val settings = SettingsStore(store)
+        try {
+            val egp = Currency("EGP")
+            settings.setCashPair(egp, Currency.EUR)
+            settings.adjustCashCount(egp, BigDecimal("100"), 3)
+            settings.setCashPair(egp, Currency.USD)
+            assertEquals(3, settings.cashCounts(egp).first()[BigDecimal("100")])
+            settings.ensureCashPair()
+            assertEquals(egp to Currency.USD, settings.cashPair.first())
+            settings.setCashPair(Currency.EUR, Currency.USD)
+            assertTrue(settings.cashCounts(Currency.EUR).first().isEmpty())
+            assertEquals(3, settings.cashCounts(egp).first()[BigDecimal("100")])
+
+            store.edit { it[stringPreferencesKey("cash_counts_KWD")] = "0.50:2;0.5:1" }
+            settings.adjustCashCount(Currency("KWD"), BigDecimal("0.5"), -1)
+            val counts = settings.cashCounts(Currency("KWD")).first()
+            assertEquals(mapOf(BigDecimal("0.5") to 2), counts)
+            assertEquals(0, BigDecimal.ONE.compareTo(it.bbnss.moneta.core.model.CashCounter.total(counts)))
+        } finally { job.cancelAndJoin(); file.delete() }
     }
 }

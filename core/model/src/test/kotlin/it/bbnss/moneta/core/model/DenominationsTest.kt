@@ -12,19 +12,20 @@ class DenominationsTest {
     fun `usa i tagli reali quando li conosce`() {
         assertTrue(Denominations.areKnown(Currency.EUR))
         assertEquals(
-            listOf(5, 10, 20, 50, 100, 200).map { BigDecimal(it) },
+            listOf(5, 10, 20, 50, 100, 200, 500).map { BigDecimal(it) },
             Denominations.of(Currency.EUR),
         )
     }
 
     /**
-     * Il caso che dà senso alla tabella: in Vietnam la banconota più piccola di
-     * uso corrente è da mille. Una serie 1-2-5 sarebbe inutilizzabile.
+     * Vietnam includes lower cotton denominations alongside polymer banknotes.
+     * Generic 1-2-5 examples would be unsuitable as banknote denominations.
      */
     @Test
     fun `le valute ad alta denominazione partono dal loro taglio reale`() {
         val dong = Denominations.of(Currency("VND"))
-        assertEquals(BigDecimal(1000), dong.first())
+        assertEquals(BigDecimal(200), dong.first())
+        assertTrue(BigDecimal(1000) in dong)
         assertEquals(BigDecimal(500000), dong.last())
     }
 
@@ -37,20 +38,36 @@ class DenominationsTest {
     fun `una valuta sconosciuta ricade su una serie stimata`() {
         val unknown = Currency("ZZZ")
         assertFalse(Denominations.areKnown(unknown))
-        assertTrue(Denominations.of(unknown).isNotEmpty())
+        assertTrue(Denominations.of(unknown).isEmpty())
+        assertTrue(Denominations.illustrativeAmounts(unknown).isNotEmpty())
     }
 
-    /**
-     * Per le valute fuori elenco l'ordine di grandezza si deduce dal tasso: con
-     * 25.000 unità per euro la tabella deve parlare di migliaia, non di unità.
-     */
-    @Test
-    fun `la serie stimata segue l ordine di grandezza del tasso`() {
-        val small = Denominations.of(Currency("ZZZ"), referenceRate = BigDecimal("1.2"))
-        val large = Denominations.of(Currency("ZZZ"), referenceRate = BigDecimal("25000"))
+    @Test fun `illustrative amounts are independent of rates and cannot be counted`() {
+        assertTrue(Denominations.of(Currency("ZZZ")).isEmpty())
+        assertEquals(BigDecimal.ONE, Denominations.illustrativeAmounts(Currency("ZZZ")).first())
+        assertTrue(Denominations.illustrativeAmounts(Currency("UGX")).first() >= BigDecimal(1000))
+    }
 
-        assertEquals(BigDecimal.ONE, small.first())
-        assertTrue("Attesi migliaia, ottenuto ${large.first()}", large.first() >= BigDecimal(1000))
+    @Test fun `corrects omitted and withdrawn notes`() {
+        assertTrue(BigDecimal("2") in Denominations.of(Currency.USD))
+        assertTrue(BigDecimal("1000") in Denominations.of(Currency("CHF")))
+        assertFalse(BigDecimal("1000") in Denominations.of(Currency("DKK")))
+    }
+
+    @Test fun `fractional Egyptian notes remain decimals`() {
+        assertEquals(BigDecimal("0.25"), Denominations.of(Currency("EGP")).first())
+        assertTrue(BigDecimal("0.5") in Denominations.of(Currency("EGP")))
+    }
+
+    @Test fun `every counted catalog has dated primary-source metadata`() {
+        for ((_, catalog) in Denominations.catalogs) {
+            assertTrue(catalog.source.startsWith("https://"))
+            assertTrue(catalog.issuer.isNotBlank())
+            assertEquals(java.time.LocalDate.of(2026, 10, 8), catalog.checkedOn)
+            assertTrue(catalog.values.all { it.signum() > 0 })
+            assertEquals(catalog.values.sorted(), catalog.values)
+            assertEquals(catalog.values.size, catalog.values.distinct().size)
+        }
     }
 
     @Test

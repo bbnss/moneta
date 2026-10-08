@@ -21,6 +21,12 @@ import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.time.Duration
 import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.Locale
+
+data class BoardClipboardLabels(val title: String, val rateDate: String, val verified: String, val unknown: String)
 
 /** Una valuta preferita con l'importo già convertito e formattato. */
 data class BoardRow(
@@ -46,11 +52,21 @@ data class BoardUiState(
     val favourites: Set<Currency> = emptySet(),
 ) {
     /** Copy the displayed base amount and every selected conversion in saved order. */
-    fun clipboardText(): String = buildString {
+    fun clipboardText(labels: BoardClipboardLabels, locale: Locale = Locale.getDefault(),
+                      zone: ZoneId = ZoneId.systemDefault()): String = buildString {
+        appendLine(labels.title)
+        append(labels.rateDate).append(": ").appendLine(rateDate?.let {
+            DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale).format(it)
+        } ?: labels.unknown)
+        append(labels.verified).append(": ").appendLine(updatedAt?.let {
+            DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(locale).format(it.atZone(zone))
+        } ?: labels.unknown)
+        appendLine()
         append(inputText.ifEmpty { "0" }).append(' ').append(base.code)
         rows.forEach { row ->
             append('\n').append(row.formatted.ifEmpty { "—" }).append(' ').append(row.currency.code)
         }
+        append("\n\nMoneta\nhttps://github.com/bbnss/moneta")
     }
 }
 

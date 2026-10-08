@@ -125,10 +125,9 @@
 
     <!-- Tabella da viaggio -->
     <string name="ratecard_subtitle">Tassi di riferimento, senza commissioni.</string>
-    <string name="ratecard_estimated">I tagli di %1$s non sono nel nostro elenco: questi importi sono una stima ragionevole.</string>
     <string name="ratecard_share">Condividi la tabella</string>
     <string name="ratecard_share_title">Tabella dei cambi</string>
-    <string name="ratecard_unsupported">%1$s non pubblica un tasso per questa coppia, quindi non c\'è tabella da mostrare.</string>
+    <string name="ratecard_unsupported">Nessun tasso in cache per questa coppia (%1$s). I valori convertiti non sono disponibili.</string>
 
     <!-- Aggiornamento -->
     <string name="refresh">Aggiorna i tassi</string>
@@ -162,13 +161,33 @@
     <string name="favourites_done">Fine</string>
     <string name="favourites_up">Sposta su</string>
     <string name="favourites_down">Sposta giù</string>
-    <string name="cash_home">Casa: %1$s</string>
-    <string name="cash_local">Locale: %1$s</string>
     <string name="cash_table">Tabella</string>
     <string name="cash_count">Conta banconote</string>
     <string name="cash_add">Aggiungi una banconota da %1$s</string>
     <string name="cash_remove">Togli una banconota da %1$s</string>
     <string name="cash_reset">Azzera conteggio</string>
-    <string name="cash_total">Totale: %1$s %2$s\n%3$s %4$s</string>
     <string name="board_reorder_hint">Tieni premuta e trascina una riga, oppure usa le frecce su/giù.</string>
+    <string name="board_copy_title">Tassi di cambio · Moneta</string>
+    <string name="board_copy_rate_date">Tassi del</string>
+    <string name="board_copy_verified">Verificati</string>
+    <string name="board_copy_unknown">Sconosciuto</string>
+    <string name="cash_banknotes">Banconote</string>
+    <string name="cash_value_in">Valore in</string>
+    <string name="cash_note_header">Banconota · %1$s</string>
+    <string name="cash_amount_header">Importo indicativo · %1$s</string>
+    <string name="cash_value_header">Valore · %1$s</string>
+    <string name="cash_quantity">Quantità</string>
+    <string name="cash_quantity_description">Quantità per %1$s %2$s: %3$d</string>
+    <string name="cash_table_hint">Quanto vale ogni banconota %1$s in %2$s. Tassi di riferimento, senza commissioni.</string>
+    <string name="cash_catalog_missing">Il catalogo verificato delle banconote %1$s non è disponibile. La tabella mostra importi indicativi, non banconote. Non puoi aggiungere nuovi conteggi.</string>
+    <string name="cash_saved_hint">I vecchi conteggi sono conservati. I tagli fuori dal catalogo verificato si possono solo togliere; restano inclusi nel totale.</string>
+    <string name="cash_saved_note">Taglio salvato · fuori catalogo verificato</string>
+    <string name="cash_saved_total">Include tagli salvati fuori dal catalogo verificato</string>
+    <string name="cash_count_total">Totale conteggio</string>
+    <string name="cash_catalog_details">Tagli e fonte</string>
+    <string name="cash_catalog_checked">Catalogo verificato: %1$s</string>
+    <string name="cash_catalog_scope">Tagli documentati dall’emittente. L’elenco può escludere serie precedenti o commemorative; non identifica le singole serie di banconote.</string>
+    <string name="cash_catalog_source">Apri fonte</string>
+    <string name="cash_indicative">Importi indicativi</string>
+    <string name="cash_indicative_hint">Importi di esempio in %1$s convertiti in %2$s. Tassi di riferimento, senza commissioni.</string>
 </resources>

@@ -72,6 +72,9 @@ fun BoardScreen(
 ) {
     val clipboard = LocalClipboardManager.current
     val locale = LocalConfiguration.current.locales[0]
+    val clipboardLabels = BoardClipboardLabels(
+        stringResource(R.string.board_copy_title), stringResource(R.string.board_copy_rate_date),
+        stringResource(R.string.board_copy_verified), stringResource(R.string.board_copy_unknown))
     var invalidPaste by remember { mutableStateOf(false) }
     var reordering by rememberSaveable { mutableStateOf(false) }
     val dragStep = with(LocalDensity.current) { 60.dp.toPx() }
@@ -93,7 +96,7 @@ fun BoardScreen(
         )
 
         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-            TextButton(onClick = { clipboard.setText(AnnotatedString(state.clipboardText())) }) { Text(stringResource(R.string.amount_copy)) }
+            TextButton(onClick = { clipboard.setText(AnnotatedString(state.clipboardText(clipboardLabels, locale))) }) { Text(stringResource(R.string.amount_copy)) }
             TextButton(onClick = { invalidPaste = !onPaste(clipboard.getText()?.text.orEmpty(), locale) }) { Text(stringResource(R.string.amount_paste)) }
             TextButton(onClick = { reordering = !reordering }) {
                 Text(stringResource(if (reordering) R.string.favourites_done else R.string.favourites_reorder))

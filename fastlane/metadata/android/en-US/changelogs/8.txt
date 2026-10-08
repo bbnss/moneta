@@ -1,0 +1,1 @@
+Clearer Cash screen: Banknotes / Value in selectors, documented catalogs and totals always visible. Saved counts are preserved. Better swap alignment, compact k/m chart labels and copied exchange rates with dates and app link.
