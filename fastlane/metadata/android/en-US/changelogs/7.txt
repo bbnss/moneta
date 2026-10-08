@@ -1,0 +1,1 @@
+Currency swapping now has its own space between the amount fields. Copy from Your currencies includes the base amount and every selected conversion, with currency codes and saved order. English GitHub release notes and APK instructions.

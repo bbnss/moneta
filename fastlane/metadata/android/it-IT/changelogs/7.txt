@@ -1,0 +1,1 @@
+Lo scambio delle valute ha uno spazio dedicato fra i campi. Copia in Le tue valute include importo iniziale e tutti i cambi selezionati, con codici valuta e ordine salvato. Note delle release GitHub e istruzioni degli APK in inglese.

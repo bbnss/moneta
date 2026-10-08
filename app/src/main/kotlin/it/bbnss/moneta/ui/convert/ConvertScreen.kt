@@ -18,8 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -55,8 +53,6 @@ fun ConvertScreen(
     var showDetails by remember { mutableStateOf(false) }
     var showMarkup by remember { mutableStateOf(false) }
     var calculator by rememberSaveable { mutableStateOf(true) }
-    var firstRowHeight by remember { mutableIntStateOf(0) }
-    val density = LocalDensity.current
     val clipboard = LocalClipboardManager.current
     val configuration = LocalConfiguration.current
     val locale = configuration.locales[0]
@@ -71,31 +67,31 @@ fun ConvertScreen(
     Column(modifier.fillMaxSize()) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 12.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Box {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    AmountRow(state.from, state.fromText, state.activeField == Field.FROM,
-                        onFieldClick = { onFieldSelected(Field.FROM) }, onCurrencyClick = { pickerFor = Field.FROM },
-                        onCopy = { clipboard.setText(AnnotatedString(state.fromText.ifEmpty { "0" })) },
-                        onPaste = { onPaste(Field.FROM, clipboard.getText()?.text.orEmpty(), locale) },
-                        onClear = { onFieldSelected(Field.FROM); onKey(KeypadKey.Clear) },
-                        modifier = Modifier.onSizeChanged { firstRowHeight = it.height })
-                    AmountRow(state.to, state.toText, state.activeField == Field.TO,
-                        onFieldClick = { onFieldSelected(Field.TO) }, onCurrencyClick = { pickerFor = Field.TO },
-                        onCopy = { clipboard.setText(AnnotatedString(state.toText.ifEmpty { "0" })) },
-                        onPaste = { onPaste(Field.TO, clipboard.getText()?.text.orEmpty(), locale) },
-                        onClear = { onFieldSelected(Field.TO); onKey(KeypadKey.Clear) },
-                        resultLabel = if (state.markupPercent.signum() != 0) {
-                            stringResource(if (state.feeMode == FeeMode.CASH) R.string.fee_receive else R.string.fee_cost)
-                        } else null,
-                        referenceText = state.withoutFeeText?.let {
-                            stringResource(R.string.fee_without, it, state.to.code)
-                        })
+            Column {
+                AmountRow(state.from, state.fromText, state.activeField == Field.FROM,
+                    onFieldClick = { onFieldSelected(Field.FROM) }, onCurrencyClick = { pickerFor = Field.FROM },
+                    onCopy = { clipboard.setText(AnnotatedString(state.fromText.ifEmpty { "0" })) },
+                    onPaste = { onPaste(Field.FROM, clipboard.getText()?.text.orEmpty(), locale) },
+                    onClear = { onFieldSelected(Field.FROM); onKey(KeypadKey.Clear) })
+                Row(Modifier.fillMaxWidth().height(48.dp).padding(start = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically) {
+                    FilledTonalIconButton(onClick = onSwap,
+                        modifier = Modifier.width(64.dp).height(48.dp),
+                        shape = RoundedCornerShape(12.dp)) {
+                        Icon(Icons.Default.SwapVert, stringResource(R.string.convert_swap))
+                    }
                 }
-                FilledTonalIconButton(onClick = onSwap, modifier = Modifier
-                    .offset(x = 8.dp, y = with(density) { firstRowHeight.toDp() } - 20.dp)
-                    .size(48.dp)) {
-                    Icon(Icons.Default.SwapVert, stringResource(R.string.convert_swap))
-                }
+                AmountRow(state.to, state.toText, state.activeField == Field.TO,
+                    onFieldClick = { onFieldSelected(Field.TO) }, onCurrencyClick = { pickerFor = Field.TO },
+                    onCopy = { clipboard.setText(AnnotatedString(state.toText.ifEmpty { "0" })) },
+                    onPaste = { onPaste(Field.TO, clipboard.getText()?.text.orEmpty(), locale) },
+                    onClear = { onFieldSelected(Field.TO); onKey(KeypadKey.Clear) },
+                    resultLabel = if (state.markupPercent.signum() != 0) {
+                        stringResource(if (state.feeMode == FeeMode.CASH) R.string.fee_receive else R.string.fee_cost)
+                    } else null,
+                    referenceText = state.withoutFeeText?.let {
+                        stringResource(R.string.fee_without, it, state.to.code)
+                    })
             }
             state.rate?.let { rate ->
                 Text(stringResource(R.string.reference_rate, state.from.code, AmountFormat.formatRate(rate), state.to.code),

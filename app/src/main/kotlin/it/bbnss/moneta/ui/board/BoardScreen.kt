@@ -93,7 +93,7 @@ fun BoardScreen(
         )
 
         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-            TextButton(onClick = { clipboard.setText(AnnotatedString(state.inputText.ifEmpty { "0" })) }) { Text(stringResource(R.string.amount_copy)) }
+            TextButton(onClick = { clipboard.setText(AnnotatedString(state.clipboardText())) }) { Text(stringResource(R.string.amount_copy)) }
             TextButton(onClick = { invalidPaste = !onPaste(clipboard.getText()?.text.orEmpty(), locale) }) { Text(stringResource(R.string.amount_paste)) }
             TextButton(onClick = { reordering = !reordering }) {
                 Text(stringResource(if (reordering) R.string.favourites_done else R.string.favourites_reorder))

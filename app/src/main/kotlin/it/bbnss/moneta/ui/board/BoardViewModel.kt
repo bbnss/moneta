@@ -44,7 +44,15 @@ data class BoardUiState(
     /** Valute coperte dalla fonte, per il selettore di aggiunta. */
     val availableCurrencies: List<Currency> = emptyList(),
     val favourites: Set<Currency> = emptySet(),
-)
+) {
+    /** Copy the displayed base amount and every selected conversion in saved order. */
+    fun clipboardText(): String = buildString {
+        append(inputText.ifEmpty { "0" }).append(' ').append(base.code)
+        rows.forEach { row ->
+            append('\n').append(row.formatted.ifEmpty { "—" }).append(' ').append(row.currency.code)
+        }
+    }
+}
 
 /**
  * Un importo, tutte le valute preferite convertite insieme.

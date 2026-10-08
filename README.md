@@ -19,7 +19,7 @@ Every currency app fails on at least one of these:
 - Offline-first: the local database is the only source of truth, the UI never waits on the network
 - Explicit freshness indicator with four states, always visible
 - Multiple free providers, no API keys, automatic failover, manual override
-- Multi-currency board: one amount, favourites in your saved order, with drag and accessible move controls
+- Multi-currency board: one amount, favourites in your saved order, with drag and accessible move controls; copy the base amount and every selected conversion together
 - Cash table and banknote counter: independent Home/Local pair, counts saved per local currency, totals in both currencies
 - Automatic local-currency detection with no location permission
 - Historical charts; cash exchange fees reduce what you receive, card fees increase the cost; calculator by default with an optional numeric keypad; amounts shown with and without fees
@@ -52,7 +52,7 @@ Rates are reference rates. They are not what a bank or a bureau will actually gi
 
 ## Install with Obtainium
 
-Use `https://github.com/bbnss/moneta` as the GitHub source. Version 0.2.0 is a normal release and does not require enabling prereleases. Leave APK and release-title filters empty to select the single APK automatically. The AAB is kept locally for Play; it is not a GitHub download.
+Use `https://github.com/bbnss/moneta` as the GitHub source. Version 0.2.1 is a normal release and does not require enabling prereleases. Leave APK and release-title filters empty to select the single APK automatically. The AAB is kept locally for Play; it is not a GitHub download.
 
 ## Build
 
@@ -65,7 +65,7 @@ Requires JDK 21 and the Android SDK (compileSdk 36).
 ./gradlew :core:data:connectedDebugAndroidTest  # Room/DataStore on an emulator
 ```
 
-Download the signed APK from the [0.2.0 release](https://github.com/bbnss/moneta/releases/tag/v0.2.0). Installation and signature notes: [0.2.0](docs/RELEASE_0.2.0.md). [Verification record](docs/VERIFICATION_0.2.0.md).
+Download the signed APK from the [latest release](https://github.com/bbnss/moneta/releases/latest). Installation and signature notes: [0.2.1](docs/RELEASE_0.2.1.md). [Verification record](docs/VERIFICATION_0.2.1.md).
 
 ## Contributing
 

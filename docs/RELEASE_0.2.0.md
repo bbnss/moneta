@@ -1,32 +1,42 @@
 # Moneta 0.2.0
 
-Versione `0.2.0`, codice `6`, pacchetto `it.bbnss.moneta`. Release normale per GitHub e Obtainium.
+Android version `0.2.0`, version code `6`, package `it.bbnss.moneta`. A normal GitHub release for direct installation and Obtainium.
 
-## Converti
+## Changes
 
-- Calcolatrice disponibile all’apertura, con pulsante per passare al tastierino numerico.
-- Scambio delle valute a sinistra, fra i due campi degli importi.
-- Con una commissione impostata, il secondo campo mostra sia il risultato con commissione sia “Senza commissione”, riferiti allo stesso importo di partenza. Il confronto resta coerente quando modifichi il secondo campo.
-- “Ricevi” identifica l’importo dopo la commissione per cambio contanti; “Costo con carta” identifica il costo maggiorato. Il pulsante separato “Commissione: 5%” apre le impostazioni della percentuale e della modalità.
+- Open Convert with the calculator and switch to the numeric keypad when preferred.
+- Place currency swapping on the left between the two amount fields.
+- Show both the fee-adjusted result and “Without fee” for the same base amount, including when editing the second field.
+- Label cash results “You receive” and card results “Card cost”. Keep the separate “Fee: 5%” control for choosing the percentage and fee mode.
 
-Sono inclusi anche date per singola quotazione, cache per coppia, fallback con copertura, regole comuni per offline/Wi-Fi/aggiornamenti, endpoint personale, copia/incolla, calcoli salvati, preferiti ordinabili e conta-banconote.
+Also includes quotation dates per currency, coverage-aware failover, per-pair cache, shared offline/Wi-Fi/update rules, custom endpoints, saved calculations, reorderable favourites and a banknote counter. Italian and English remain available in the app.
 
-## Download e Obtainium
+## Download and Obtainium
 
-Scarica `Moneta-0.2.0-6.apk`. Per Obtainium usa la fonte GitHub `https://github.com/bbnss/moneta`: questa release non richiede “Includi prerelease”. Lascia vuoti i filtri sul nome dell’APK o sul titolo della release. L’AAB è conservato localmente per Play e non è un allegato GitHub. Nessun caricamento su Play è stato effettuato.
+Download `Moneta-0.2.0-6.apk`. In Obtainium, use `https://github.com/bbnss/moneta` as the GitHub source. This is a normal release: enabling prereleases is unnecessary. Leave APK-name and release-title filters empty to select the single APK automatically.
 
-Scarica anche `SHA256SUMS.txt` e verifica nella stessa cartella:
+The AAB from the same commit is kept locally for Play and is not a GitHub asset. No Play Store upload has been performed for this release.
+
+Download `SHA256SUMS.txt` into the same directory as the APK and check it with:
 
 ```sh
 shasum -a 256 -c SHA256SUMS.txt
 ```
 
-## Firma e aggiornamento
+## Signing and updates
 
-L’APK usa il keystore Moneta esistente. Il certificato SHA-256 è:
+The APK uses the existing Moneta keystore. Signing certificate SHA-256:
 
 `e674d49ab66f68eba081e7a4ffbbd4f4c6a78d7d2e8bc3add7f4517f904c2c02`
 
-La firma coincide con rc.1, rc.2 e il precedente AAB locale `Moneta-0.1.1-3.aab` preparato per Play. Le due rc possono essere aggiornate direttamente, conservando i dati. Anche una versione Play firmata con questo stesso certificato può essere aggiornata se il suo codice versione è inferiore a 6; il certificato dell’APK distribuito da Play non è stato confrontato direttamente.
+This matches the 0.2.0 release candidates, the stable 0.2.0 APK, and the previous local `Moneta-0.1.1-3.aab` prepared for Play. Installations signed with this certificate and a version code lower than 6 can be updated while preserving their data. The certificate of the APK actually distributed by Play has not been compared directly.
 
-Il vecchio `moneta-0.1.1-test.apk` di GitHub usa invece il certificato Android Debug e non può essere aggiornato direttamente da questo APK. Disinstallare quella vecchia build elimina i suoi dati: annota preferiti e impostazioni prima di un’eventuale reinstallazione. La chiave privata, il keystore e le password non sono pubblicati; il certificato e la sua impronta sono pubblici. [Firma Android](https://developer.android.com/studio/publish/app-signing).
+The old GitHub `moneta-0.1.1-test.apk` uses the Android Debug certificate and cannot be updated directly with this APK. Uninstalling that old debug build deletes its data; record your favourites and settings before reinstalling. The private key, keystore and passwords are not published. The certificate and its fingerprint are public.
+
+## Checks to try
+
+- Compare cash and card fees, then edit the second amount and check the inverse conversion.
+- Switch between calculator and numeric keypad; reopen the app and check saved calculations.
+- Check both amounts and fee controls with large text on a small screen.
+
+When reporting a problem, include the app language, screen size, currency pair, source and reproduction steps.

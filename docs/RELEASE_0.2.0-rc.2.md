@@ -1,44 +1,46 @@
-# Moneta 0.2.0 — prova firmata rc.2
+# Moneta 0.2.0 — signed test build rc.2
 
-Versione Android `0.2.0`, codice `5`, pacchetto `it.bbnss.moneta`. L’APK è prodotto con shrinking attivo e firmato con il keystore esistente `moneta-upload-key.jks`. Su GitHub è disponibile l’APK per la prova; l’AAB dello stesso commit è conservato localmente per il successivo caricamento su Play, dopo l’approvazione. Il keystore e le password restano esclusi dal repository e dagli allegati.
+Android version `0.2.0`, version code `5`, package `it.bbnss.moneta`. Release shrinking is enabled and the APK is signed with the existing Moneta keystore. Only the test APK is published on GitHub. The AAB from the same commit is kept locally for a later Play upload after approval. The keystore and passwords are excluded from the repository and release assets.
 
-Questa build corregge il trascinamento dei preferiti della rc.1. Può aggiornare la rc.1 firmata Moneta senza disinstallazione: usa lo stesso certificato e un codice versione superiore.
+This build fixes favourite dragging in rc.1. It updates the signed Moneta rc.1 installation without uninstalling, using the same certificate and a higher version code.
 
-## Novità
+## Changes
 
-- Date per singola valuta e data della conversione corretta; “Tasso del…” distinto da “Verificato…”.
-- Fallback che controlla la copertura della richiesta, cache per coppia e nessuna mescolanza di fonti nella stessa conversione.
-- Offline, Wi-Fi e intervallo applicati da una politica comune; modalità manuale senza aggiornamenti automatici.
-- Converti compatto, tastierino numerico con calcolatrice opzionale, copia/incolla e ripristino del calcolo.
-- Commissioni “Cambio contanti” e “Pagamento carta” incluse nel risultato, anche modificando il secondo campo.
-- Preferiti ordinabili e salvati. Contanti con coppia indipendente e conta-banconote; conteggio per valuta locale e totale nelle due valute.
-- Endpoint personale HTTPS: modifica, Salva, Verifica, selezione CUSTOM e fallback.
+- Keep quotation dates per currency and use the correct conversion date; distinguish “Rate from” from “Verified”.
+- Check requested currency coverage during failover, keep per-pair cache, and use one source per conversion.
+- Apply offline, Wi-Fi and interval rules through one policy; manual-only mode disables automatic updates.
+- Compact Convert, numeric keypad with optional calculator, copy/paste and calculation restore.
+- Cash exchange and card payment fees are included in the result, including when editing the second field.
+- Save favourite order. Cash uses an independent pair and a banknote counter with counts per local currency and totals in both currencies.
+- Custom HTTPS endpoint: edit, Save, Verify, CUSTOM selection and fallback.
 
-## Installazione e firma
+## Installation and signing
 
-Scarica l’APK e `SHA256SUMS.txt` dalla prerelease. Verifica con `shasum -a 256 -c SHA256SUMS.txt` nella cartella contenente l’APK e il file dei checksum. Consenti l’installazione dalla fonte usata per scaricarlo e apri il file APK.
+Download the APK and `SHA256SUMS.txt`. Run `shasum -a 256 -c SHA256SUMS.txt` in their directory, allow installation from the downloading app, and open the APK.
 
-Il certificato SHA-256 di questa build è:
+Signing certificate SHA-256:
 
 `e674d49ab66f68eba081e7a4ffbbd4f4c6a78d7d2e8bc3add7f4517f904c2c02`
 
-Il vecchio `moneta-0.1.1-test.apk` pubblicato su GitHub è firmato con Android Debug, SHA-256:
+The old GitHub `moneta-0.1.1-test.apk` is signed with Android Debug, SHA-256:
 
 `50ebbcabee5e06a2de08935519043f4a25a35fcf8cc0a4747ce89e2f6e11bf30`
 
-Le due firme non sono compatibili: questa build non può aggiornare direttamente quel vecchio APK. Se è installato, la prova richiede disinstallazione e nuova installazione; la disinstallazione elimina cache, preferiti e impostazioni. Annota ciò che vuoi ripristinare prima di procedere. La migrazione Room conserva i dati solo quando l’aggiornamento è consentito dalla firma. Il certificato di questo APK coincide con quello del precedente AAB locale `Moneta-0.1.1-3.aab` preparato per Play. La chiave di upload e la chiave di firma dell’app su Play possono coincidere; non è stato modificato alcun keystore né effettuato un caricamento su Play. Se l’app distribuita da Play è firmata con questo stesso certificato, l’APK può aggiornarla quando il codice versione installato è inferiore. Il certificato dell’APK effettivamente distribuito da Play non è stato confrontato qui; il precedente AAB conferma la continuità della firma del bundle. [Firma Android](https://developer.android.com/studio/publish/app-signing).
+These certificates are incompatible: this APK cannot update that old debug build. Uninstalling the debug build deletes cache, favourites and settings; record what you want to restore first. Room migration preserves data when signature compatibility permits an update.
 
-## Prova consigliata
+This APK's certificate matches the previous local `Moneta-0.1.1-3.aab` prepared for Play. The upload key and Play app signing key can be the same. No keystore was changed and no Play upload was performed for this release. A Play installation using this same certificate can be updated when its version code is lower. The actual Play-distributed APK certificate was not compared here; the earlier AAB establishes bundle signing continuity.
 
-1. Apri offline: importo iniziale 1 e conversione dai dati inclusi; la prima cifra deve sostituire 1. Controlla il tasso e la data dichiarata.
-2. Prova VND/EUR, seleziona BCE e aggiorna con fallback attivo e disattivo. Se manca copertura, la cache utilizzabile deve restare disponibile con avviso.
-3. Prova “Solo quando lo chiedo”, offline e Wi-Fi-only, anche per Aggiorna, storico e Verifica endpoint. Una richiesta bloccata non deve cambiare “Verificato”.
-4. Imposta una commissione: contanti deve ridurre il risultato, carta aumentarlo. Modifica il secondo campo e controlla l’inverso.
-5. Digita un’espressione e chiudi forzatamente l’app. Alla riapertura devono tornare importo, campo attivo e modalità calcolatrice. Azzera e ripeti: deve restare zero.
-6. Copia/incolla numeri in italiano e inglese; testo non valido deve dare un messaggio e lasciare invariato il calcolo. Prova importi lunghi e scorrimento orizzontale.
-7. Riordina Valute trascinando dopo pressione prolungata o con i comandi su/giù; riapri e controlla l’ordine.
-8. In Contanti scegli Casa e Locale; conta i tagli con −/+, verifica i due totali e azzera. Cambia Casa: il conteggio locale deve restare. Cambia Locale e torna: deve tornare il suo conteggio.
-9. Salva un server HTTPS Frankfurter v2 con eventuale sottopercorso e premi Verifica. Controlla copertura e errori; Verifica non deve scegliere automaticamente la fonte. Cambia indirizzo e verifica che la vecchia cache CUSTOM non sia usata.
-10. Controlla tema chiaro/scuro/nero, italiano/inglese e testo ingrandito. Nella vista numerica normale importi e commissione devono essere visibili senza scorrere.
+## Suggested checks
 
-Comunica eventuali problemi indicando lingua, dimensioni schermo, fonte, coppia e passaggi per riprodurli. La pubblicazione definitiva, i nuovi screenshot store e il caricamento Play seguiranno il tuo riscontro positivo.
+1. Open offline: the initial amount is 1 and conversion uses bundled data; the first digit replaces 1. Check the stated rate and date.
+2. Try VND/EUR with ECB selected and failover on/off. Missing coverage must keep usable cache and show a warning.
+3. Try manual-only, offline and Wi-Fi-only modes for refresh, history and endpoint verification. A blocked request must not change “Verified”.
+4. Set a fee: cash reduces the result, card increases it. Edit the second amount and check the inverse.
+5. Enter an expression and force-stop the app. Reopening restores the amount, active field and calculator. Clear and repeat: zero must remain saved.
+6. Copy/paste Italian and English numbers. Invalid text must leave the calculation unchanged and show a message. Check long amounts and horizontal scrolling.
+7. Reorder currencies with a long-press drag or up/down controls; reopen and check the saved order.
+8. In Cash, select Home and Local, count notes using minus/plus, check both totals and reset. Changing Home must preserve local counts. Changing Local and returning must restore its counts.
+9. Save a Frankfurter v2 HTTPS server, including an optional deployment path, and tap Verify. Check coverage and errors. Verification must not change the source. Changing the URL must invalidate the old CUSTOM cache.
+10. Check light, dark and black themes, Italian/English and larger text. In standard numeric mode, amounts and fee must be visible without scrolling.
+
+Report issues with app language, screen size, source, currency pair and reproduction steps. Store screenshots and the Play upload follow positive user feedback.

@@ -1,43 +1,43 @@
-# Verifica Moneta 0.2.0
+# Moneta 0.2.0 verification
 
-## Build finale — codice 6
+## Final build — version code 6
 
-- `./gradlew test lint assembleRelease bundleRelease --max-workers=2`: completato. 120 test JVM distinti, nessun fallimento, lint senza errori; rimangono avvisi già descritti sotto.
-- Nuovo test del confronto commissioni: per 100 con tasso 1,2, riferimento 120, contanti al 5% 114 e carta al 5% 126; il confronto mantiene lo stesso importo di partenza anche modificando il secondo campo.
-- APK release con shrinking installato e verificato prima della pubblicazione. Italiano e inglese, 360×640 e 412×915 dp, testo 130%. Importi con e senza commissione e controllo percentuale visibili insieme. Sulla calcolatrice degli schermi piccoli tutti gli operatori sono mantenuti in quattro righe, con bersagli tattili di almeno 48 dp.
-- Verificati passaggio calcolatrice/tastierino, scambio delle valute a sinistra tra i campi, importi contanti/carta e formula inversa nella build reale. Calcolatrice compatta: `2×(3+4)=14`, espressione conservata dopo force-stop. Dialogo commissioni scorrevole, con Salva accessibile anche a 360×640 dp e testo 130%. Geometria e scala del testo dell’emulatore ripristinate.
-- Certificato APK verificato con apksigner; firma e versione dell’AAB controllate con jarsigner, keytool e bundletool. Stesso certificato Moneta, pacchetto `it.bbnss.moneta`, versione `0.2.0`, codice `6`.
-- Controllati file modificati e contenuto degli archivi APK/AAB: nessuna password locale di firma, chiave privata, token o percorso personale trovato. Keystore e proprietà locali sono ignorati da Git. I log e le schermate di prova restano temporanei e non sono allegati alla release.
-- Release GitHub normale `v0.2.0`, APK pubblico con checksum e provenienza. AAB conservato localmente per Play; nessun caricamento su Play.
+- `./gradlew test lint assembleRelease bundleRelease --max-workers=2` passed. 120 distinct JVM tests, no failures, lint without errors; existing warnings remain as described below.
+- Added fee-comparison tests: base 100 and rate 1.2 give reference 120, cash at 5% gives 114, card at 5% gives 126. Comparison uses the same base when editing the second field.
+- Installed the shrunk release APK before publication. Checked Italian and English, 360×640 and 412×915 dp, and 130% text. Fee-adjusted and reference amounts and percentage control are visible together. Compact calculator retains all operators in four rows with touch targets of at least 48 dp.
+- Checked calculator/numeric switching, swapping on the left between fields, cash/card fees and inverse conversion in the actual release. Compact expression `2×(3+4)=14` survives force-stop. Fee dialog scrolls and Save remains accessible at 360×640 dp with 130% text. Restored emulator display geometry and font scale.
+- Verified APK certificate with apksigner, AAB signature with jarsigner, and AAB certificate/version with keytool and bundletool. Existing Moneta certificate, package `it.bbnss.moneta`, version `0.2.0`, code `6`.
+- Scanned changed files and APK/AAB contents: no actual local signing passwords, private keys, tokens or personal paths found. Local keystore/properties are ignored by Git. Test logs and screenshots remain temporary and are not release assets.
+- Published normal GitHub release `v0.2.0`, public APK with checksum and provenance. AAB kept locally; no Play upload.
 
-## Verifiche delle precedenti rc
+## Earlier release-candidate checks
 
-## Verifiche automatiche
+### Automated verification
 
-- `./gradlew test lint assembleRelease bundleRelease`: test JVM per modello, parser e repository, incluse entrambe le varianti Android; lint senza errori.
-- 119 test JVM distinti (60 modello, 50 provider, 9 repository/persistenza) e 3 test su emulatore Android 16 / API 36.1.
-- Fixture ALL/USD con date diverse, data più vecchia per cross-rate, pivot senza data artificiale e date mancanti sconosciute.
-- Tassi vecchi appena verificati, soglie 0/1–3/4–7/oltre 7 giorni, avanzamento dell’orologio senza mutazioni del database.
-- VND/EUR con risposta incompleta BCE, fallback verso fonte compatibile, failover disabilitato e cache conservata.
-- Blocchi offline/Wi-Fi per apertura/worker, manuale, storico e Verifica endpoint; nessuna chiamata né aggiornamento dell’ora di verifica quando bloccati. Intervallo automatico e modalità manuale.
-- Endpoint con sottopercorso, verifica separata da scelta fonte/cache e invalidazione di snapshot e storico CUSTOM al cambio indirizzo.
-- Formule dirette/inverse contanti e carta, totali con tagli decimali, parsing italiano/inglese e testo non valido.
-- Preferiti esistenti in ordine alfabetico, nuovo ordine persistente e spostamento che salta la base nascosta.
-- Coppia contanti indipendente e conteggi separati per valuta locale.
-- Room: database reale costruito dallo schema 1, con cache e storico preesistenti, migrato e validato da Room 2. Valori decimali e timestamp preservati; nuove date NULL.
-- DataStore reale chiuso e riaperto: espressione, campo attivo, azzeramento esplicito, ordine, modalità commissione e conteggio recuperati.
-- Seed offline con almeno 50 valute e date per tutte le quotazioni, senza passaggi da float nello script.
+- `./gradlew test lint assembleRelease bundleRelease` passed model, parser and repository JVM tests, including both Android variants; lint without errors.
+- 119 distinct JVM tests (60 model, 50 providers, 9 repository/persistence) and 3 instrumented tests on Android 16 / API 36.1.
+- ALL/USD fixture with different dates, oldest necessary date for cross-rates, pivot without an artificial date, and unknown missing dates.
+- Old rates just verified, freshness boundaries at 0/1–3/4–7/over 7 days, and clock advancement without database mutations.
+- VND/EUR with incomplete ECB coverage, fallback to a compatible provider, disabled failover, and preserved cache.
+- Offline/Wi-Fi blocking for opening, worker, manual updates, history and endpoint verification: no calls or verification timestamp changes for blocked requests. Automatic interval and manual-only mode.
+- Custom endpoint deployment path, verification independent of source/cache, and invalidation of CUSTOM snapshots/history on URL change.
+- Direct/inverse cash and card formulas, decimal-denomination totals, Italian/English parsing and invalid text.
+- Alphabetical migration of existing favourites, persisted order, and movement skipping the hidden base.
+- Independent cash pair and counts per local currency.
+- Room migration from a real schema-1 database containing cache/history, validated against schema 2. Decimal values and timestamps preserved; new dates NULL.
+- Real DataStore close/reopen: expression, active field, explicit clear, favourite order, fee mode and banknote counts recovered.
+- Offline seed with at least 50 currencies and dates for every quotation; no float conversions in the seed script.
 
-## Prove della release su emulatore
+### Release emulator checks
 
-APK release installato con minificazione e resource shrinking attivi. Controllati italiano/inglese, schermi 360×640 e 412×915 dp, testo 130%, tastierino numerico/calcolatrice, ripristino dell’espressione dopo force-stop, temi, avviso offline, riordino e conteggio dei tagli. Nella vista numerica standard i due importi e la commissione restano visibili senza scorrere, anche a 360×640 con testo 130%. Le schermate temporanee di verifica non sostituiscono i materiali store, che saranno rifatti dopo il riscontro positivo.
+Installed the release APK with minification and resource shrinking. Checked Italian/English, 360×640 and 412×915 dp, 130% text, numeric/calculator modes, expression restore after force-stop, themes, offline warning, reorder and banknote counting. In standard numeric mode, both amounts and fee remain visible without scrolling, including 360×640 dp with 130% text. Temporary screenshots do not replace store materials, which follow positive user feedback.
 
-Prova di regressione del trascinamento: `python3 scripts/check_reorder.py` su emulatore di prova con almeno tre preferiti visibili. Controlla che il gesto cambi l’ordine, conservi le valute e la base, e che l’ordine torni dopo force-stop. La rc.2 elimina il conflitto fra il gesto di riordino e la normale pressione prolungata della riga.
+Drag regression: `python3 scripts/check_reorder.py` on a test emulator with at least three visible favourites. The gesture changes order, preserves currencies/base, and persists across force-stop. rc.2 removes the conflict between the reorder gesture and the normal row long-press.
 
-## Build e firma
+### Build and signing
 
-Pacchetto `it.bbnss.moneta`, versione `0.2.0`, codice `5`. APK e AAB firmati dalla chiave locale Moneta. Certificati confrontati con apksigner e keytool; AAB verificato con jarsigner. Le password non vengono pubblicate. Provenienza del commit e checksum sono negli allegati della prerelease.
+Release-candidate package `it.bbnss.moneta`, version `0.2.0`, code `5`. APK and AAB signed with the local Moneta key. Certificates compared using apksigner/keytool; AAB verified with jarsigner. Passwords are not published. Commit provenance and checksums are prerelease assets.
 
-R8 è fissato a 9.1.29, versione compatibile con Kotlin 2.4, tramite il repository ufficiale. I precedenti avvisi sui metadati Kotlin sono risolti. Rimangono avvisi R8 relativi al parsing asincrono non supportato dal provider AGP e avvisi lint sulle versioni delle dipendenze: non sono errori di compilazione. [Compatibilità Kotlin/R8](https://developer.android.com/build/kotlin-support), [repository R8](https://r8.googlesource.com/r8/+/refs/heads/main/README.md).
+R8 is pinned to 9.1.29, compatible with Kotlin 2.4, through its official repository. Earlier Kotlin metadata warnings are resolved. Existing warnings concern asynchronous R8 parsing unsupported by the AGP provider and lint dependency versions; these are not build errors. [Kotlin/R8 compatibility](https://developer.android.com/build/kotlin-support), [R8 repository](https://r8.googlesource.com/r8/+/refs/heads/main/README.md).
 
-La firma del vecchio APK GitHub 0.1.1 è Android Debug e differisce da questa chiave Moneta. La compatibilità con installazioni Play non è stata verificata. Le istruzioni complete sono in [RELEASE_0.2.0-rc.2.md](RELEASE_0.2.0-rc.2.md).
+The old GitHub 0.1.1 APK uses Android Debug signing and differs from the Moneta key. Compatibility with an actual Play installation was not verified. See [release-candidate instructions](RELEASE_0.2.0-rc.2.md).

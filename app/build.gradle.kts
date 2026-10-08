@@ -22,9 +22,9 @@ android {
         applicationId = "it.bbnss.moneta"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        // Codes 4/5 were published in the 0.2.0 release candidates.
-        versionCode = 6
-        versionName = "0.2.0"
+        // Codes 4/5 were release candidates; code 6 was the first stable 0.2.0.
+        versionCode = 7
+        versionName = "0.2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

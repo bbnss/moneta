@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] — 2026-10-08
+
+- Give the rectangular currency swap button its own row between the amount fields, without covering flags.
+- Copy the base amount and every selected conversion from Your currencies, with currency codes and saved order.
+- Use English throughout GitHub release descriptions and APK instructions, including historical releases.
+- Version code 7; normal GitHub release for Obtainium, signed with the existing Moneta certificate.
+
 ## [0.2.0] — 2026-10-07
 
 - Open Convert with the calculator; allow switching to the compact numeric keypad.
@@ -105,7 +112,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rounding happens only when formatting for display, following each currency's ISO 4217
   minor units.
 
-[Unreleased]: https://github.com/bbnss/moneta/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/bbnss/moneta/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/bbnss/moneta/releases/tag/v0.2.1
 [0.2.0]: https://github.com/bbnss/moneta/releases/tag/v0.2.0
 [0.1.1]: https://github.com/bbnss/moneta/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/bbnss/moneta/releases/tag/v0.1.0

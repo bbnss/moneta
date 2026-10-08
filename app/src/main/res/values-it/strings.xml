@@ -148,7 +148,7 @@
     <string name="fee_without">Senza commissione: %1$s %2$s</string>
     <string name="reference_rate">Riferimento: 1 %1$s = %2$s %3$s</string>
     <string name="keypad_calculator">Calcolatrice</string>
-    <string name="keypad_numeric">Tastierino numerico</string>
+    <string name="keypad_numeric">Numerico</string>
     <string name="amount_actions">Azioni importo</string>
     <string name="amount_copy">Copia</string>
     <string name="amount_paste">Incolla</string>
