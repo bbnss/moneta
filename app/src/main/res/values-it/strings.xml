@@ -115,6 +115,7 @@
 
     <!-- Board multi-valuta -->
     <string name="board_title">Le tue valute</string>
+    <string name="board_pick_base">Cambia la valuta dell’importo (%1$s)</string>
     <string name="board_empty_title">Nessuna valuta preferita</string>
     <string name="board_empty_body">Aggiungi qualche valuta alle preferite e le vedrai convertite tutte insieme qui.</string>
     <string name="board_set_as_base">Usa %1$s come valuta dell\'importo</string>

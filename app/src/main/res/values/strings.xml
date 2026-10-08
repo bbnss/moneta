@@ -113,6 +113,7 @@
 
     <!-- Multi-currency board -->
     <string name="board_title">Your currencies</string>
+    <string name="board_pick_base">Change amount currency (%1$s)</string>
     <string name="board_empty_title">No favourite currencies yet</string>
     <string name="board_empty_body">Star a few currencies and they will all be converted here at once.</string>
     <string name="board_set_as_base">Use %1$s as the amount currency</string>

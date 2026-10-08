@@ -212,7 +212,8 @@ class BoardViewModel(
             val previousBase = settings.baseCurrency.first()
             if (previousBase == currency) return@launch
 
-            settings.setPair(currency, settings.quoteCurrency.first())
+            val previousQuote = settings.quoteCurrency.first()
+            settings.setPair(currency, if (currency == previousQuote) previousBase else previousQuote)
 
             // La valuta che lascia il posto entra fra le preferite: altrimenti
             // sparirebbe dall'elenco proprio mentre la si stava guardando.

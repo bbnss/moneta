@@ -1,0 +1,1 @@
+Scambio centrato tra i due campi. Cambia la valuta principale direttamente in Valute toccando bandiera, sigla e freccia. La scelta è salvata e condivisa con Converti; importi e preferiti esistenti conservati.

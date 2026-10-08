@@ -73,14 +73,12 @@ fun ConvertScreen(
                     onCopy = { clipboard.setText(AnnotatedString(state.fromText.ifEmpty { "0" })) },
                     onPaste = { onPaste(Field.FROM, clipboard.getText()?.text.orEmpty(), locale) },
                     onClear = { onFieldSelected(Field.FROM); onKey(KeypadKey.Clear) })
-                Row(Modifier.fillMaxWidth().height(if (configuration.screenHeightDp < 700) 56.dp else 64.dp).padding(start = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically) {
-                    Box(Modifier.width(96.dp), contentAlignment = Alignment.Center) {
-                        FilledTonalIconButton(onClick = onSwap,
-                            modifier = Modifier.width(64.dp).height(48.dp),
-                            shape = RoundedCornerShape(12.dp)) {
-                            Icon(Icons.Default.SwapVert, stringResource(R.string.convert_swap))
-                        }
+                Box(Modifier.fillMaxWidth().height(if (configuration.screenHeightDp < 700) 56.dp else 64.dp),
+                    contentAlignment = Alignment.Center) {
+                    FilledTonalIconButton(onClick = onSwap,
+                        modifier = Modifier.width(64.dp).height(48.dp),
+                        shape = RoundedCornerShape(12.dp)) {
+                        Icon(Icons.Default.SwapVert, stringResource(R.string.convert_swap))
                     }
                 }
                 AmountRow(state.to, state.toText, state.activeField == Field.TO,

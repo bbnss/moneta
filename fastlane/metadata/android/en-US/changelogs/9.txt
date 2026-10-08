@@ -1,0 +1,1 @@
+Centered swap between the currency fields. Change the base currency directly in Your currencies by tapping its flag/code and arrow. The selection is saved and shared with Convert; amounts and existing favourites are retained.

@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.FilledTonalButton
@@ -45,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
@@ -81,6 +83,7 @@ fun BoardScreen(
     val moveUp = stringResource(R.string.favourites_up)
     val moveDown = stringResource(R.string.favourites_down)
     var showPicker by remember { mutableStateOf(false) }
+    var showBasePicker by rememberSaveable { mutableStateOf(false) }
     var showKeypad by rememberSaveable { mutableStateOf(true) }
 
     Column(
@@ -93,6 +96,7 @@ fun BoardScreen(
             keypadVisible = showKeypad,
             onToggleKeypad = { showKeypad = !showKeypad },
             onClear = { onKey(KeypadKey.Clear) },
+            onCurrencyClick = { showBasePicker = true },
         )
 
         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
@@ -199,18 +203,18 @@ fun BoardScreen(
         }
     }
 
-    if (showPicker) {
+    if (showPicker || showBasePicker) {
         CurrencyPickerSheet(
             currencies = state.availableCurrencies,
             favourites = state.favourites,
-            // Toccare una valuta qui significa "voglio vederla nell'elenco",
-            // non "convertila adesso": la scelta la aggiunge alle preferite.
             onPick = { currency ->
-                if (currency !in state.favourites) onToggleFavourite(currency)
+                if (showBasePicker) onSetAsBase(currency)
+                else if (currency !in state.favourites) onToggleFavourite(currency)
                 showPicker = false
+                showBasePicker = false
             },
             onToggleFavourite = onToggleFavourite,
-            onDismiss = { showPicker = false },
+            onDismiss = { showPicker = false; showBasePicker = false },
         )
     }
 }
@@ -222,6 +226,7 @@ private fun BaseAmountRow(
     keypadVisible: Boolean,
     onToggleKeypad: () -> Unit,
     onClear: () -> Unit,
+    onCurrencyClick: () -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
 
@@ -236,14 +241,17 @@ private fun BaseAmountRow(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            CurrencyMetadata.flagOf(currency)?.let { flag ->
-                Text(flag, style = MaterialTheme.typography.titleLarge)
+            val currencyDescription = stringResource(R.string.board_pick_base, currency.code)
+            TextButton(onClick = onCurrencyClick,
+                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 4.dp),
+                modifier = Modifier.semantics { contentDescription = currencyDescription }) {
+                CurrencyMetadata.flagOf(currency)?.let { flag ->
+                    Text(flag, style = MaterialTheme.typography.titleLarge)
+                }
+                Text(currency.code, style = MaterialTheme.typography.titleMedium,
+                    fontFamily = FontFamily.Monospace, modifier = Modifier.padding(horizontal = 6.dp))
+                Icon(Icons.Default.ExpandMore, null, Modifier.width(16.dp))
             }
-            Text(
-                text = currency.code,
-                style = MaterialTheme.typography.titleMedium,
-                fontFamily = FontFamily.Monospace,
-            )
             AmountText(text, Modifier.weight(1f))
 
             // Azzerare è l'operazione più frequente qui: si arriva con un
