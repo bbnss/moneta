@@ -12,9 +12,16 @@ captures/
 *.aab
 *.keystore
 *.jks
-!debug.keystore
 keystore.properties
 dist/
+
+# Local credentials must never be committed.
+.env
+.env.*
+credentials.json
+google-services.json
+*service-account*.json
+*service_account*.json
 
 # Cloni dei progetti competitor, tenuti solo per consultazione locale
 reference/

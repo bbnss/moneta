@@ -1,6 +1,6 @@
 # Privacy policy — Moneta
 
-_Last updated: 26 August 2026. Applies to the Android app `it.bbnss.moneta`._
+_Last updated: 9 October 2026. Applies to the Android app `it.bbnss.moneta`._
 
 ## The short version
 
@@ -76,5 +76,5 @@ public at <https://github.com/bbnss/moneta/commits/main/docs/PRIVACY.md>.
 
 ## Contact
 
-Write to bnsos@protonmail.com, or open an issue at
+Open an issue at
 <https://github.com/bbnss/moneta/issues>.
